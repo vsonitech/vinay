@@ -180,12 +180,17 @@ td{
         box-shadow:none;
     }
 }
+
+
 #outputSection{
-    width: 210mm;
-    min-height: 297mm;
-    margin: auto;
-    padding: 10mm;
-    box-sizing: border-box;
+    width:100%;
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    table-layout:fixed;
+    word-wrap:break-word;
 }
 
 </style>
@@ -437,6 +442,20 @@ let netTax=incomeTax-rebate;
 let cess=Math.round(netTax*0.04);
 let totalLiability=netTax+cess;
 let difference = taxPaid - totalLiability;
+let name=document.getElementById("name").value.trim();
+let pan=document.getElementById("pan").value.trim();
+let designation=document.getElementById("designation").value;
+let bank=document.getElementById("bank").value.trim();
+let mobile=document.getElementById("mobile").value.trim();
+let gross=document.getElementById("gross").value.trim();
+let taxPaid=document.getElementById("taxPaid").value.trim();
+
+if(!name || !pan || !designation || !bank || !mobile || !gross || !taxPaid){
+    alert("All fields are compulsory.");
+    return;
+}
+gross=parseFloat(gross);
+taxPaid=parseFloat(taxPaid);
 
 document.getElementById("outDesignation").innerText=designation;
 document.getElementById("outBank").innerText=bank;
@@ -497,12 +516,19 @@ function exportPDF(){
     }
 
     const opt = {
-        margin:       [10,10,10,10],   // top, left, bottom, right
-        filename:     'Income_Tax_Calculation.pdf',
-        image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all'] }
+        margin: 5,
+        filename: 'Income_Tax_Calculation.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { 
+            scale: 2,
+            scrollY: 0,
+            useCORS: true
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+        }
     };
 
     html2pdf().set(opt).from(element).save();
@@ -514,5 +540,6 @@ function exportPDF(){
 
 </body>
 </html>
+
 
 
