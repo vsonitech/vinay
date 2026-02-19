@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>आयकर गणना पत्र</title>
+
+<style>
+
+/* Make sheet responsive */
+.sheet{
+    max-width:900px;
+    width:95%;
+    margin:auto;
+}
+
+/* Make table scroll on small devices */
+@media (max-width:768px){
+
+    body{
+        font-size:13px;
+    }
+
+    table{
+        font-size:12px;
+    }
+
+    .sheet{
+        padding:10px;
+    }
+
+    .form-grid{
+        grid-template-columns: 1fr;  /* single column on mobile */
+    }
+
+    td{
+        padding:4px;
+    }
+}
+
+/* Prevent horizontal overflow */
+table{
+    width:100%;
+    overflow-x:auto;
+}
+
+
+@page {
+    size: A4 portrait;
+    margin: 18mm 15mm;
+}
+
+body{
+    font-family: Calibri, Arial;
+    background:#f4f6f9;
+}
+
+.sheet{
+    width: 800px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h1,h2,h3{
+    margin:0;
+}
+
+.center{text-align:center;}
+.right{text-align:right;}
+.bold{font-weight:bold;}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+}
+
+td{
+    border:1px solid #333;
+    padding:6px;
+}
+
+.header{
+    background:#e9eef5;
+    font-weight:bold;
+}
+
+.section-title{
+    background:#dbe5f1;
+    font-weight:bold;
+}
+
+.total-row{
+    background:#f2f2f2;
+    font-weight:bold;
+}
+
+input{
+    margin:4px;
+}
+
+.form-section{
+    margin-bottom:20px;
+    padding:10px;
+    border:1px solid #bbb;
+    background:white;
+}
+
+@media print{
+    body{background:white;}
+    .form-section, button{
+        display:none;
+    }
+    .sheet{
+        box-shadow:none;
+    }
+}
+
+button{
+    padding:6px 14px;
+    font-size:14px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:12px 20px;
+    margin-top:10px;
+}
+
+.form-grid div{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-grid label{
+    font-size:13px;
+    margin-bottom:3px;
+    font-weight:600;
+}
+
+.form-grid input{
+    padding:6px;
+    border:1px solid #999;
+    border-radius:4px;
+}
+
+.button-row{
+    text-align:center;
+    margin-top:20px;
+}
+
+.button-row button{
+    padding:8px 20px;
+    margin:0 10px;
+    font-size:14px;
+    border:none;
+    border-radius:4px;
+    background:#2e75b6;
+    color:white;
+    cursor:pointer;
+}
+
+.button-row button:hover{
+    background:#1f4e79;
+}
+
+.disclaimer{
+    font-size:12px;
+    padding:12px;
+    background:#fff8e1;
+    color:#7a5c00;
+    border-top:2px solid #e0c200;
+    text-align:center;
+}
+
+.credit-line{
+    background:linear-gradient(90deg,#1f4e79,#2e75b6);
+    color:white;
+    text-align:center;
+    font-size:13px;
+    padding:10px;
+    letter-spacing:0.5px;
+    font-weight:600;
+}
+
+.signature-box{
+    height:90px;
+    vertical-align:bottom;
+    text-align:center;
+    font-weight:600;
+    padding-bottom:10px;
+}
+/* Top Credit Strip */
+.top-credit{
+    background:linear-gradient(90deg,#1f4e79,#2e75b6);
+    color:white;
+    text-align:center;
+    padding:8px;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:0.5px;
+}
+
+/* Tool Header Strip */
+.tool-header{
+    background:#f0f4f9;
+    border-bottom:3px solid #2e75b6;
+    text-align:center;
+    padding:15px 10px;
+}
+
+.tool-title{
+    font-size:18px;
+    font-weight:bold;
+    color:#1f4e79;
+}
+
+.tool-instruction{
+    font-size:13px;
+    margin-top:5px;
+    color:#444;
+}
+
+/* Add spacing before form */
+.form-section{
+    margin-top:15px;
+}
+
+</style>
+<script src="https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="sheet">
+<div class="top-credit">
+     Income Tax Utility 2025-26 ⚡ Developed & Automated by Vinay Soni
+</div>
+<div class="tool-header">
+    <div class="tool-title">
+        Income Tax Calculation Utility (New Tax Regime)
+    </div>
+    <div class="tool-instruction">
+        Enter employee details carefully and click Generate to create official tax computation sheet.
+    </div>
+</div>
+
+<div class="form-section">
+<h3 style="text-align:center;">Enter Details</h3>
+
+<div class="form-grid">
+
+<div>
+<label>Name</label>
+<input type="text" id="name">
+</div>
+
+<div>
+<label>PAN</label>
+<input type="text" id="pan">
+</div>
+
+<div>
+<label>Designation</label>
+<input type="text" id="designation">
+</div>
+
+<div>
+<label>Account No</label>
+<input type="text" id="bank">
+</div>
+
+<div>
+<label>Mobile No</label>
+<input type="text" id="mobile">
+</div>
+
+<div>
+<label>Gross Total Salary</label>
+<input type="number" id="gross">
+</div>
+
+<div>
+<label>Income Tax Deducted (Total)</label>
+<input type="number" id="taxPaid">
+</div>
+
+</div>
+
+<div class="button-row">
+<button onclick="calculate()">Generate</button>
+<button onclick="window.print()">Print</button>
+<button onclick="exportPDF()">Export PDF</button>
+
+</div>
+
+</div>
+<div id="outputSection" style="display:none;">
+<table>
+
+<tr>
+<td colspan="4" class="center">
+
+<img src="header1.png" style="width:100%; max-height:120px; object-fit:contain;">
+</td>
+</tr>
+<tr>
+<td colspan="4" class="center bold">
+आयकर गणना पत्र वर्ष 2025-26 (कर निर्धारण वर्ष 2026-27)
+</td>
+</tr>
+
+<tr>
+<td colspan="4" class="center bold">
+New Tax Regime
+</td>
+</tr>
+
+<tr>
+<td class="bold">नाम कार्मिक:</td>
+<td id="outName"></td>
+<td class="bold">PAN</td>
+<td id="outPan"></td>
+</tr>
+<tr>
+<td class="bold">Designation</td>
+<td id="outDesignation"></td>
+<td class="bold">Mobile</td>
+<td id="outMobile"></td>
+</tr>
+
+<tr>
+<td class="bold">Bank A/C No.</td>
+<td id="outBank"></td>
+<td class="bold">Date</td>
+<td id="outDate"></td>
+</tr>
+
+
+<tr>
+<td colspan="3">वित्तीय वर्ष 2025-26 में प्राप्त कुल वेतन</td>
+<td class="right" id="grossOut"></td>
+</tr>
+
+<tr>
+<td colspan="3">स्टेण्डर्ड डिडक्शन (धारा 16)</td>
+<td class="right">75,000₹</td>
+</tr>
+
+<tr class="total-row">
+<td colspan="3">कर योग्य आय</td>
+<td class="right" id="taxable"></td>
+</tr>
+
+<tr>
+<td colspan="3">धारा 288A के अनुसार पूर्णांक</td>
+<td class="right" id="rounded"></td>
+</tr>
+
+<tr>
+<td colspan="4" class="section-title center">
+आयकर की गणना (New Tax Regime Slab)
+</td>
+</tr>
+
+<tr>
+<td colspan="3">4,00,001 से 8,00,000 तक 5%</td>
+<td class="right" id="slab1"></td>
+</tr>
+
+<tr>
+<td colspan="3">8,00,001 से 12,00,000 तक 10%</td>
+<td class="right" id="slab2"></td>
+</tr>
+
+<tr>
+<td colspan="3">12,00,001 से 16,00,000 तक 15%</td>
+<td class="right" id="slab3"></td>
+</tr>
+
+<tr>
+<td colspan="3">16,00,001 से 20,00,000 तक 20%</td>
+<td class="right" id="slab4"></td>
+</tr>
+
+<tr>
+<td colspan="3">20,00,001 से 24,00,000 तक 25%</td>
+<td class="right" id="slab5"></td>
+</tr>
+
+<tr>
+<td colspan="3">24,00,001 से अधिक 30%</td>
+<td class="right" id="slab6"></td>
+</tr>
+
+<tr class="total-row">
+<td colspan="3">योग आयकर</td>
+<td class="right" id="incomeTax"></td>
+</tr>
+
+<tr>
+<td colspan="3">छूट धारा 87(A)</td>
+<td class="right" id="rebate"></td>
+</tr>
+
+<tr class="total-row">
+<td colspan="3">शेष आयकर</td>
+<td class="right" id="netTax"></td>
+</tr>
+
+<tr>
+<td colspan="3">उपकर 4%</td>
+<td class="right" id="cess"></td>
+</tr>
+
+<tr class="total-row">
+<td colspan="3">कुल आयकर देयता</td>
+<td class="right" id="totalLiability"></td>
+</tr>
+
+<tr>
+<td colspan="3">Total Tax Paid Already</td>
+<td class="right" id="taxPaidOut"></td>
+</tr>
+
+<tr class="total-row">
+<td colspan="3" id="finalLabel">Income Tax Refundable</td>
+<td class="right" id="refund"></td>
+</tr>
+
+
+<tr>
+<td colspan="2" class="signature-box">Signature of Employee</td>
+<td colspan="2" class="signature-box">Signature of DDO</td>
+</tr>
+
+<tr>
+<td colspan="4" class="disclaimer">
+This calculation is generated for reference purposes only. 
+Please verify with official records before final submission.
+</td>
+</tr>
+
+<tr>
+<td colspan="4" class="credit-line">
+⚡ Developed & Automated by <b>Vinay Soni<b> | Income Tax Utility 2025-26
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+<script>
+function downloadPDF(){
+    window.print();
+}
+
+function round10(v){ return Math.round(v/10)*10; }
+function format(v){ return v<=0? "-₹" : v.toLocaleString()+"₹"; }
+
+function calculate()
+
+
+
+{
+let designation=document.getElementById("designation").value;
+let bank=document.getElementById("bank").value;
+let mobile=document.getElementById("mobile").value;
+let today=new Date().toLocaleDateString('en-GB');
+
+let name=document.getElementById("name").value;
+let pan=document.getElementById("pan").value;
+let gross=parseFloat(document.getElementById("gross").value)||0;
+let taxPaid=parseFloat(document.getElementById("taxPaid").value)||0;
+
+let taxable=gross-75000;
+let rounded=round10(taxable);
+
+let slab1=(rounded<400001)?0:(rounded>800000?20000:(rounded-400000)*0.05);
+let slab2=(rounded<800001)?0:(rounded>1200000?40000:(rounded-800000)*0.10);
+let slab3=(rounded<1200001)?0:(rounded>1600000?60000:(rounded-1200000)*0.15);
+let slab4=(rounded<1600001)?0:(rounded>2000000?80000:(rounded-1600000)*0.20);
+let slab5=(rounded<2000001)?0:(rounded>2400000?100000:(rounded-2000000)*0.25);
+let slab6=(rounded<2400001)?0:(rounded-2400000)*0.30;
+
+let incomeTax=slab1+slab2+slab3+slab4+slab5+slab6;
+
+let rebate=(rounded<1200001)?incomeTax:
+           (rounded>1270584?0:(incomeTax-(rounded-1200000)));
+
+let netTax=incomeTax-rebate;
+let cess=Math.round(netTax*0.04);
+let totalLiability=netTax+cess;
+let difference = taxPaid - totalLiability;
+document.getElementById("outDesignation").innerText=designation;
+document.getElementById("outBank").innerText=bank;
+document.getElementById("outMobile").innerText=mobile;
+document.getElementById("outDate").innerText=today;
+
+document.getElementById("outName").innerText=name;
+document.getElementById("outPan").innerText=pan;
+document.getElementById("grossOut").innerText=format(gross);
+document.getElementById("taxable").innerText=format(taxable);
+document.getElementById("rounded").innerText=format(rounded);
+document.getElementById("slab1").innerText=format(Math.round(slab1));
+document.getElementById("slab2").innerText=format(Math.round(slab2));
+document.getElementById("slab3").innerText=format(Math.round(slab3));
+document.getElementById("slab4").innerText=format(Math.round(slab4));
+document.getElementById("slab5").innerText=format(Math.round(slab5));
+document.getElementById("slab6").innerText=format(Math.round(slab6));
+document.getElementById("incomeTax").innerText=format(Math.round(incomeTax));
+document.getElementById("rebate").innerText=format(Math.round(rebate));
+document.getElementById("netTax").innerText=format(Math.round(netTax));
+document.getElementById("cess").innerText=format(cess);
+document.getElementById("totalLiability").innerText=format(totalLiability);
+document.getElementById("taxPaidOut").innerText=format(taxPaid);
+document.getElementById("outputSection").style.display = "block";
+
+let finalLabel = document.getElementById("finalLabel");
+let refundCell = document.getElementById("refund");
+
+if(difference > 0){
+    finalLabel.innerText = "Income Tax Refundable";
+    refundCell.style.color = "green";
+    refundCell.innerText = "-"+difference.toLocaleString()+"₹";
+}
+else if(difference < 0){
+    finalLabel.innerText = "Income Tax Payable";
+    refundCell.style.color = "red";
+    refundCell.innerText = Math.abs(difference).toLocaleString()+"₹";
+}
+else{
+    finalLabel.innerText = "Income Tax Settlement";
+    refundCell.style.color = "black";
+    refundCell.innerText = "0₹";
+}
+function exportPDF(){
+
+    let element = document.getElementById("outputSection");
+
+    if(element.style.display === "none"){
+        alert("Please click Generate first.");
+        return;
+    }
+
+    let opt = {
+        margin: 10,
+        filename: 'Income_Tax_Calculation.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+}
+
+}
+
+</script>
+
+</body>
+</html>
