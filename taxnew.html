@@ -6,6 +6,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+/* Mobile Output Fix */
+#outputSection{
+    width:100%;
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    table-layout:auto;
+}
+
+@media (max-width:768px){
+
+    .sheet{
+        width:95%;
+        padding:10px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    td{
+        font-size:13px;
+        padding:5px;
+    }
+}
 
 body{
     font-family: Calibri, Arial;
@@ -413,18 +440,40 @@ function format(v){ return v<=0? "-₹" : v.toLocaleString("en-IN")+"₹"; }
 
 function calculate(){
 
-let designation=document.getElementById("designation").value;
-let bank=document.getElementById("bank").value;
-let mobile=document.getElementById("mobile").value;
-let today=new Date().toLocaleDateString('en-GB');
+// Get values
+let name = document.getElementById("name").value.trim().toUpperCase();
+let pan = document.getElementById("pan").value.trim().toUpperCase();
+let designation = document.getElementById("designation").value;
+let bank = document.getElementById("bank").value.trim();
+let mobile = document.getElementById("mobile").value.trim();
+let gross = document.getElementById("gross").value.trim();
+let taxPaid = document.getElementById("taxPaid").value.trim();
 
-let name=document.getElementById("name").value;
-let pan=document.getElementById("pan").value;
-let gross=parseFloat(document.getElementById("gross").value)||0;
-let taxPaid=parseFloat(document.getElementById("taxPaid").value)||0;
+// Validation
+if(!name || !pan || !designation || !bank || !mobile || !gross || !taxPaid){
+    alert("All fields are compulsory.");
+    return;
+}
 
-let taxable=gross-75000;
-let rounded=round10(taxable);
+if(mobile.length != 10){
+    alert("Mobile number must be 10 digits.");
+    return;
+}
+
+if(pan.length != 10){
+    alert("PAN must be 10 characters.");
+    return;
+}
+
+// Convert to numbers
+gross = parseFloat(gross);
+taxPaid = parseFloat(taxPaid);
+
+let today = new Date().toLocaleDateString('en-GB');
+
+// Calculation
+let taxable = gross - 75000;
+let rounded = Math.round(taxable/10)*10;
 
 let slab1=(rounded<400001)?0:(rounded>800000?20000:(rounded-400000)*0.05);
 let slab2=(rounded<800001)?0:(rounded>1200000?40000:(rounded-800000)*0.10);
@@ -442,43 +491,30 @@ let netTax=incomeTax-rebate;
 let cess=Math.round(netTax*0.04);
 let totalLiability=netTax+cess;
 let difference = taxPaid - totalLiability;
-let name=document.getElementById("name").value.trim();
-let pan=document.getElementById("pan").value.trim();
-let designation=document.getElementById("designation").value;
-let bank=document.getElementById("bank").value.trim();
-let mobile=document.getElementById("mobile").value.trim();
-let gross=document.getElementById("gross").value.trim();
-let taxPaid=document.getElementById("taxPaid").value.trim();
 
-if(!name || !pan || !designation || !bank || !mobile || !gross || !taxPaid){
-    alert("All fields are compulsory.");
-    return;
-}
-gross=parseFloat(gross);
-taxPaid=parseFloat(taxPaid);
-
+// Output fill
+document.getElementById("outName").innerText=name;
+document.getElementById("outPan").innerText=pan;
 document.getElementById("outDesignation").innerText=designation;
 document.getElementById("outBank").innerText=bank;
 document.getElementById("outMobile").innerText=mobile;
 document.getElementById("outDate").innerText=today;
 
-document.getElementById("outName").innerText=name;
-document.getElementById("outPan").innerText=pan;
-document.getElementById("grossOut").innerText=format(gross);
-document.getElementById("taxable").innerText=format(taxable);
-document.getElementById("rounded").innerText=format(rounded);
-document.getElementById("slab1").innerText=format(Math.round(slab1));
-document.getElementById("slab2").innerText=format(Math.round(slab2));
-document.getElementById("slab3").innerText=format(Math.round(slab3));
-document.getElementById("slab4").innerText=format(Math.round(slab4));
-document.getElementById("slab5").innerText=format(Math.round(slab5));
-document.getElementById("slab6").innerText=format(Math.round(slab6));
-document.getElementById("incomeTax").innerText=format(Math.round(incomeTax));
-document.getElementById("rebate").innerText=format(Math.round(rebate));
-document.getElementById("netTax").innerText=format(Math.round(netTax));
-document.getElementById("cess").innerText=format(cess);
-document.getElementById("totalLiability").innerText=format(totalLiability);
-document.getElementById("taxPaidOut").innerText=format(taxPaid);
+document.getElementById("grossOut").innerText=gross.toLocaleString("en-IN")+"₹";
+document.getElementById("taxable").innerText=taxable.toLocaleString("en-IN")+"₹";
+document.getElementById("rounded").innerText=rounded.toLocaleString("en-IN")+"₹";
+document.getElementById("slab1").innerText=Math.round(slab1).toLocaleString("en-IN")+"₹";
+document.getElementById("slab2").innerText=Math.round(slab2).toLocaleString("en-IN")+"₹";
+document.getElementById("slab3").innerText=Math.round(slab3).toLocaleString("en-IN")+"₹";
+document.getElementById("slab4").innerText=Math.round(slab4).toLocaleString("en-IN")+"₹";
+document.getElementById("slab5").innerText=Math.round(slab5).toLocaleString("en-IN")+"₹";
+document.getElementById("slab6").innerText=Math.round(slab6).toLocaleString("en-IN")+"₹";
+document.getElementById("incomeTax").innerText=Math.round(incomeTax).toLocaleString("en-IN")+"₹";
+document.getElementById("rebate").innerText=Math.round(rebate).toLocaleString("en-IN")+"₹";
+document.getElementById("netTax").innerText=Math.round(netTax).toLocaleString("en-IN")+"₹";
+document.getElementById("cess").innerText=cess.toLocaleString("en-IN")+"₹";
+document.getElementById("totalLiability").innerText=totalLiability.toLocaleString("en-IN")+"₹";
+document.getElementById("taxPaidOut").innerText=taxPaid.toLocaleString("en-IN")+"₹";
 
 let finalLabel=document.getElementById("finalLabel");
 let refundCell=document.getElementById("refund");
@@ -498,10 +534,11 @@ else{
     refundCell.innerText="0₹";
 }
 
+// Show output
 document.getElementById("outputSection").style.display="block";
-window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
 
 }
+
 
 function exportPDF(){
     window.print();
@@ -540,6 +577,7 @@ function exportPDF(){
 
 </body>
 </html>
+
 
 
 
