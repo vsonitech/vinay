@@ -3,105 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <title>आयकर गणना पत्र</title>
-<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-.form-grid input{
-    width:100%;
-    padding:10px;
-    font-size:16px;
-}
-@media print {
-    body {
-        margin: 0;
-    }
-}
-
-@media (max-width:768px){
-
-    .form-grid{
-        grid-template-columns: 1fr;
-    }
-
-    .form-grid input{
-        font-size:18px;
-        padding:12px;
-    }
-
-    button{
-        width:100%;
-        padding:12px;
-        font-size:16px;
-        margin-top:10px;
-    }
-
-    .button-row{
-        display:flex;
-        flex-direction:column;
-        gap:10px;
-    }
-}
-
-
-/* Make sheet responsive */
-.sheet{
-    max-width:900px;
-    width:95%;
-    margin:auto;
-}
-
-/* Make table scroll on small devices */
-@media (max-width:768px){
-
-    body{
-        font-size:13px;
-    }
-
-    table{
-        font-size:12px;
-    }
-
-    .sheet{
-        padding:10px;
-    }
-
-    .form-grid{
-        grid-template-columns: 1fr;  /* single column on mobile */
-    }
-
-    td{
-        padding:4px;
-    }
-}
-
-/* Prevent horizontal overflow */
-table{
-    width:100%;
-    overflow-x:auto;
-}
-
-
-@page {
-    size: A4 portrait;
-    margin: 18mm 15mm;
-}
 
 body{
     font-family: Calibri, Arial;
     background:#f4f6f9;
+    margin:0;
 }
 
 .sheet{
-    width: 800px;
+    max-width:900px;
+    width:95%;
     margin:auto;
     background:white;
     padding:20px;
     box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
-h1,h2,h3{
-    margin:0;
-}
+h1,h2,h3{margin:0;}
 
 .center{text-align:center;}
 .right{text-align:right;}
@@ -118,11 +39,6 @@ td{
     padding:6px;
 }
 
-.header{
-    background:#e9eef5;
-    font-weight:bold;
-}
-
 .section-title{
     background:#dbe5f1;
     font-weight:bold;
@@ -133,35 +49,17 @@ td{
     font-weight:bold;
 }
 
-input{
-    margin:4px;
-}
-
 .form-section{
+    margin-top:15px;
     margin-bottom:20px;
-    padding:10px;
+    padding:15px;
     border:1px solid #bbb;
-    background:white;
-}
-
-@media print{
-    body{background:white;}
-    .form-section, button{
-        display:none;
-    }
-    .sheet{
-        box-shadow:none;
-    }
-}
-
-button{
-    padding:6px 14px;
-    font-size:14px;
+    background:#fff;
 }
 
 .form-grid{
     display:grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2,1fr);
     gap:12px 20px;
     margin-top:10px;
 }
@@ -172,15 +70,17 @@ button{
 }
 
 .form-grid label{
-    font-size:13px;
-    margin-bottom:3px;
+    font-size:14px;
     font-weight:600;
+    margin-bottom:4px;
 }
 
-.form-grid input{
-    padding:6px;
+.form-grid input,
+.form-grid select{
+    padding:8px;
     border:1px solid #999;
     border-radius:4px;
+    font-size:15px;
 }
 
 .button-row{
@@ -190,7 +90,7 @@ button{
 
 .button-row button{
     padding:8px 20px;
-    margin:0 10px;
+    margin:5px;
     font-size:14px;
     border:none;
     border-radius:4px;
@@ -203,44 +103,15 @@ button{
     background:#1f4e79;
 }
 
-.disclaimer{
-    font-size:12px;
-    padding:12px;
-    background:#fff8e1;
-    color:#7a5c00;
-    border-top:2px solid #e0c200;
-    text-align:center;
-}
-
-.credit-line{
-    background:linear-gradient(90deg,#1f4e79,#2e75b6);
-    color:white;
-    text-align:center;
-    font-size:13px;
-    padding:10px;
-    letter-spacing:0.5px;
-    font-weight:600;
-}
-
-.signature-box{
-    height:90px;
-    vertical-align:bottom;
-    text-align:center;
-    font-weight:600;
-    padding-bottom:10px;
-}
-/* Top Credit Strip */
 .top-credit{
     background:linear-gradient(90deg,#1f4e79,#2e75b6);
     color:white;
     text-align:center;
     padding:8px;
-    font-size:13px;
+    font-size:14px;
     font-weight:600;
-    letter-spacing:0.5px;
 }
 
-/* Tool Header Strip */
 .tool-header{
     background:#f0f4f9;
     border-bottom:3px solid #2e75b6;
@@ -260,65 +131,74 @@ button{
     color:#444;
 }
 
-/* Add spacing before form */
-.form-section{
-    margin-top:15px;
-}
-/* A4 locked layout */
-a4-page {
-    width: 200mm;          
-    min-height: 287mm;     
-    padding: 10mm;
-    margin: auto;
-    background: white;
-    box-sizing: border-box;
+.disclaimer{
+    font-size:12px;
+    padding:12px;
+    background:#fff8e1;
+    text-align:center;
 }
 
-/* Remove extra spacing */
-body {
-    margin: 0;
-    padding: 0;
-    background: #f4f4f4;
+.credit-line{
+    background:linear-gradient(90deg,#1f4e79,#2e75b6);
+    color:white;
+    text-align:center;
+    font-size:13px;
+    padding:10px;
+    font-weight:600;
 }
 
-/* Print mode exact match */
-@media print {
+.signature-box{
+    height:90px;
+    vertical-align:bottom;
+    text-align:center;
+    font-weight:600;
+}
 
-    body {
-        background: white;
+/* Hide output initially */
+#outputSection{
+    display:none;
+}
+
+/* Mobile */
+@media (max-width:768px){
+    .form-grid{
+        grid-template-columns:1fr;
     }
-
-    .a4-page {
-        width: 210mm;
-        height: 297mm;
-        margin: 0;
-        box-shadow: none;
-        page-break-after: avoid;
+    table{
+        font-size:13px;
     }
+}
 
-    .no-print {
-        display: none;
+@media print{
+    .form-section, .button-row{
+        display:none;
+    }
+    body{
+        background:white;
+    }
+    .sheet{
+        box-shadow:none;
     }
 }
 
 </style>
-
-
 </head>
 
 <body>
 
 <div class="sheet">
+
 <div class="top-credit">
-     Income Tax Utility 2025-26 ⚡ Developed & Automated by Vinay Soni
+Income Tax Utility 2025-26 ⚡ Developed & Automated by Vinay Soni
 </div>
+
 <div class="tool-header">
-    <div class="tool-title">
-        Income Tax Calculation Utility (New Tax Regime)
-    </div>
-    <div class="tool-instruction">
-        Enter employee details carefully and click Generate to create official tax computation sheet.
-    </div>
+<div class="tool-title">
+Income Tax Calculation Utility (New Tax Regime)
+</div>
+<div class="tool-instruction">
+Enter employee details carefully and click Generate.
+</div>
 </div>
 
 <div class="form-section">
@@ -328,27 +208,32 @@ body {
 
 <div>
 <label>Name</label>
-<input type="text" id="name">
+<input type="text" id="name" oninput="this.value = this.value.toUpperCase();">
 </div>
 
 <div>
 <label>PAN</label>
-<input type="text" id="pan">
+<input type="text" id="pan" maxlength="10" oninput="this.value = this.value.toUpperCase();">
 </div>
 
 <div>
 <label>Designation</label>
-<input type="text" id="designation">
+<select id="designation">
+<option value="">Select</option>
+<option>Principal</option>
+<option>Teacher</option>
+<option>Clerks</option>
+</select>
 </div>
 
 <div>
 <label>Account No</label>
-<input type="text" id="bank">
+<input type="number" id="bank">
 </div>
 
 <div>
 <label>Mobile No</label>
-<input type="text" id="mobile">
+<input type="number" id="mobile">
 </div>
 
 <div>
@@ -366,21 +251,21 @@ body {
 <div class="button-row">
 <button onclick="calculate()">Generate</button>
 <button onclick="window.print()">Print</button>
-<button type="button" onclick="exportPDF()">Export PDF</button>
-
+<button onclick="exportPDF()">Export PDF</button>
 </div>
 
 </div>
+
 <div id="pdfArea">
-    <div class="a4-page" id="outputSection">
-<table>
+<div id="outputSection">
 
+<table>
 <tr>
 <td colspan="4" class="center">
-
 <img src="./Header1.png" style="width:100%; max-height:120px; object-fit:contain;">
 </td>
 </tr>
+
 <tr>
 <td colspan="4" class="center bold">
 आयकर गणना पत्र वर्ष 2025-26 (कर निर्धारण वर्ष 2026-27)
@@ -399,6 +284,7 @@ New Tax Regime
 <td class="bold">PAN</td>
 <td id="outPan"></td>
 </tr>
+
 <tr>
 <td class="bold">Designation</td>
 <td id="outDesignation"></td>
@@ -412,7 +298,6 @@ New Tax Regime
 <td class="bold">Date</td>
 <td id="outDate"></td>
 </tr>
-
 
 <tr>
 <td colspan="3">वित्तीय वर्ष 2025-26 में प्राप्त कुल वेतन</td>
@@ -434,41 +319,16 @@ New Tax Regime
 <td class="right" id="rounded"></td>
 </tr>
 
-<tr>
-<td colspan="4" class="section-title center">
-आयकर की गणना (New Tax Regime Slab)
-</td>
+<tr class="section-title">
+<td colspan="4" class="center">आयकर की गणना (New Tax Regime Slab)</td>
 </tr>
 
-<tr>
-<td colspan="3">4,00,001 से 8,00,000 तक 5%</td>
-<td class="right" id="slab1"></td>
-</tr>
-
-<tr>
-<td colspan="3">8,00,001 से 12,00,000 तक 10%</td>
-<td class="right" id="slab2"></td>
-</tr>
-
-<tr>
-<td colspan="3">12,00,001 से 16,00,000 तक 15%</td>
-<td class="right" id="slab3"></td>
-</tr>
-
-<tr>
-<td colspan="3">16,00,001 से 20,00,000 तक 20%</td>
-<td class="right" id="slab4"></td>
-</tr>
-
-<tr>
-<td colspan="3">20,00,001 से 24,00,000 तक 25%</td>
-<td class="right" id="slab5"></td>
-</tr>
-
-<tr>
-<td colspan="3">24,00,001 से अधिक 30%</td>
-<td class="right" id="slab6"></td>
-</tr>
+<tr><td colspan="3">4,00,001 से 8,00,000 तक 5%</td><td class="right" id="slab1"></td></tr>
+<tr><td colspan="3">8,00,001 से 12,00,000 तक 10%</td><td class="right" id="slab2"></td></tr>
+<tr><td colspan="3">12,00,001 से 16,00,000 तक 15%</td><td class="right" id="slab3"></td></tr>
+<tr><td colspan="3">16,00,001 से 20,00,000 तक 20%</td><td class="right" id="slab4"></td></tr>
+<tr><td colspan="3">20,00,001 से 24,00,000 तक 25%</td><td class="right" id="slab5"></td></tr>
+<tr><td colspan="3">24,00,001 से अधिक 30%</td><td class="right" id="slab6"></td></tr>
 
 <tr class="total-row">
 <td colspan="3">योग आयकर</td>
@@ -505,7 +365,6 @@ New Tax Regime
 <td class="right" id="refund"></td>
 </tr>
 
-
 <tr>
 <td colspan="2" class="signature-box">Signature of Employee</td>
 <td colspan="2" class="signature-box">Signature of DDO</td>
@@ -513,34 +372,30 @@ New Tax Regime
 
 <tr>
 <td colspan="4" class="disclaimer">
-This calculation is generated for reference purposes only. 
-Please verify with official records before final submission.
+This calculation is generated for reference purposes only.
 </td>
 </tr>
 
 <tr>
 <td colspan="4" class="credit-line">
-⚡ Developed & Automated by <b>Vinay Soni<b> | Income Tax Utility 2025-26
+⚡ Developed & Automated by Vinay Soni
 </td>
 </tr>
+
 </table>
+
 </div>
-   </div>
+</div>
+
 </div>
 
 <script>
-function downloadPDF(){
-    window.print();
-}
 
 function round10(v){ return Math.round(v/10)*10; }
-function format(v){ return v<=0? "-₹" : v.toLocaleString()+"₹"; }
+function format(v){ return v<=0? "-₹" : v.toLocaleString("en-IN")+"₹"; }
 
-function calculate()
+function calculate(){
 
-
-
-{
 let designation=document.getElementById("designation").value;
 let bank=document.getElementById("bank").value;
 let mobile=document.getElementById("mobile").value;
@@ -570,6 +425,7 @@ let netTax=incomeTax-rebate;
 let cess=Math.round(netTax*0.04);
 let totalLiability=netTax+cess;
 let difference = taxPaid - totalLiability;
+
 document.getElementById("outDesignation").innerText=designation;
 document.getElementById("outBank").innerText=bank;
 document.getElementById("outMobile").innerText=mobile;
@@ -592,35 +448,38 @@ document.getElementById("netTax").innerText=format(Math.round(netTax));
 document.getElementById("cess").innerText=format(cess);
 document.getElementById("totalLiability").innerText=format(totalLiability);
 document.getElementById("taxPaidOut").innerText=format(taxPaid);
-document.getElementById("outputSection").style.display = "block";
 
-let finalLabel = document.getElementById("finalLabel");
-let refundCell = document.getElementById("refund");
+let finalLabel=document.getElementById("finalLabel");
+let refundCell=document.getElementById("refund");
 
 if(difference > 0){
-    finalLabel.innerText = "Income Tax Refundable";
-    refundCell.style.color = "green";
-    refundCell.innerText = "-"+difference.toLocaleString()+"₹";
+    finalLabel.innerText="Income Tax Refundable";
+    refundCell.style.color="green";
+    refundCell.innerText="-"+difference.toLocaleString("en-IN")+"₹";
 }
 else if(difference < 0){
-    finalLabel.innerText = "Income Tax Payable";
-    refundCell.style.color = "red";
-    refundCell.innerText = Math.abs(difference).toLocaleString()+"₹";
+    finalLabel.innerText="Income Tax Payable";
+    refundCell.style.color="red";
+    refundCell.innerText=Math.abs(difference).toLocaleString("en-IN")+"₹";
 }
 else{
-    finalLabel.innerText = "Income Tax Settlement";
-    refundCell.style.color = "black";
-    refundCell.innerText = "0₹";
+    finalLabel.innerText="Income Tax Settlement";
+    refundCell.innerText="0₹";
 }
 
+document.getElementById("outputSection").style.display="block";
+window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
 
+}
 
+function exportPDF(){
+    window.print();
 }
 function exportPDF(){
 
     let element = document.getElementById("pdfArea");
 
-    if(!element || document.getElementById("outputSection").style.display === "none"){
+    if(document.getElementById("outputSection").style.display === "none"){
         alert("Please Generate first.");
         return;
     }
@@ -629,37 +488,15 @@ function exportPDF(){
         margin: 5,
         filename: 'Income_Tax_Calculation.pdf',
         image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
-            scale: 2,     // reduce from 3 to 2
-            useCORS: true
-        },
-        jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'portrait'
-        }
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(options).from(element).save();
 }
-
 
 </script>
 <script src="https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
