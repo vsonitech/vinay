@@ -11,6 +11,11 @@
     padding:10px;
     font-size:16px;
 }
+@media print {
+    body {
+        margin: 0;
+    }
+}
 
 @media (max-width:768px){
 
@@ -36,6 +41,7 @@
         gap:10px;
     }
 }
+
 
 /* Make sheet responsive */
 .sheet{
@@ -581,19 +587,14 @@ function exportPDF(){
         return;
     }
 
-    if(typeof html2pdf === "undefined"){
-        alert("PDF library not loaded. Please refresh page.");
-        return;
-    }
-
     const options = {
-        margin: 10,
+        margin: [0, 5, 5, 5],   // top, left, bottom, right
         filename: 'Income_Tax_Calculation.pdf',
         image: { type: 'jpeg', quality: 1 },
         html2canvas: { 
             scale: 2,
             useCORS: true,
-            logging: false
+            scrollY: 0
         },
         jsPDF: { 
             unit: 'mm', 
@@ -605,11 +606,13 @@ function exportPDF(){
     html2pdf().set(options).from(element).save();
 }
 
+
 </script>
 <script src="https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 
 </body>
 </html>
+
 
 
 
