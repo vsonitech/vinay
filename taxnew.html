@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>आयकर गणना पत्र</title>
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
 <style>
 .form-grid input{
@@ -323,7 +324,7 @@ button{
 <div class="button-row">
 <button onclick="calculate()">Generate</button>
 <button onclick="window.print()">Print</button>
-<button onclick="exportPDF()">Export PDF</button>
+<button type="button" onclick="exportPDF()">Export PDF</button>
 
 </div>
 
@@ -571,19 +572,35 @@ function exportPDF(){
 
     let element = document.getElementById("outputSection");
 
-    if(element.style.display === "none"){
-        alert("Please Generate the sheet first.");
+    if(!element || element.style.display === "none"){
+        alert("Please click Generate first.");
         return;
     }
 
-    html2pdf(element, {
+    if(typeof html2pdf === "undefined"){
+        alert("PDF library not loaded. Please refresh page.");
+        return;
+    }
+
+    const options = {
         margin: 10,
         filename: 'Income_Tax_Calculation.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    });
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            logging: false
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+        }
+    };
+
+    html2pdf().set(options).from(element).save();
 }
+
 
 
 }
@@ -593,6 +610,7 @@ function exportPDF(){
 
 </body>
 </html>
+
 
 
 
