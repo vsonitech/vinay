@@ -264,6 +264,42 @@ button{
 .form-section{
     margin-top:15px;
 }
+/* A4 locked layout */
+.a4-page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 15mm;
+    margin: auto;
+    background: white;
+    box-sizing: border-box;
+}
+
+/* Remove extra spacing */
+body {
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+}
+
+/* Print mode exact match */
+@media print {
+
+    body {
+        background: white;
+    }
+
+    .a4-page {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        box-shadow: none;
+        page-break-after: avoid;
+    }
+
+    .no-print {
+        display: none;
+    }
+}
 
 </style>
 
@@ -335,7 +371,8 @@ button{
 </div>
 
 </div>
-<div id="outputSection" style="display:none;">
+<div id="pdfArea">
+    <div class="a4-page" id="outputSection">
 <table>
 
 <tr>
@@ -488,6 +525,7 @@ Please verify with official records before final submission.
 </tr>
 </table>
 </div>
+   </div>
 </div>
 
 <script>
@@ -580,19 +618,19 @@ else{
 }
 function exportPDF(){
 
-    let element = document.getElementById("outputSection");
+    let element = document.getElementById("pdfArea");
 
-    if(!element || element.style.display === "none"){
-        alert("Please click Generate first.");
+    if(!element || document.getElementById("outputSection").style.display === "none"){
+        alert("Please Generate first.");
         return;
     }
 
     const options = {
-        margin: [0, 5, 5, 5],   // top, left, bottom, right
+        margin: 0,
         filename: 'Income_Tax_Calculation.pdf',
         image: { type: 'jpeg', quality: 1 },
         html2canvas: { 
-            scale: 2,
+            scale: 3,
             useCORS: true,
             scrollY: 0
         },
@@ -607,11 +645,13 @@ function exportPDF(){
 }
 
 
+
 </script>
 <script src="https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 
 </body>
 </html>
+
 
 
 
