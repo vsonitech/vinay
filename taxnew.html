@@ -568,6 +568,10 @@ else{
     refundCell.style.color = "black";
     refundCell.innerText = "0₹";
 }
+
+
+
+}
 function exportPDF(){
 
     let element = document.getElementById("outputSection");
@@ -601,15 +605,12 @@ function exportPDF(){
     html2pdf().set(options).from(element).save();
 }
 
-
-
-}
-
 </script>
 <script src="https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 
 </body>
 </html>
+
 
 
 
