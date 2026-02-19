@@ -180,6 +180,13 @@ td{
         box-shadow:none;
     }
 }
+#outputSection{
+    width: 210mm;
+    min-height: 297mm;
+    margin: auto;
+    padding: 10mm;
+    box-sizing: border-box;
+}
 
 </style>
 </head>
@@ -477,26 +484,29 @@ function exportPDF(){
 }
 function exportPDF(){
 
-    let element = document.getElementById("pdfArea");
+    let element = document.getElementById("outputSection");
 
-    if(document.getElementById("outputSection").style.display === "none"){
+    if(element.style.display === "none"){
         alert("Please Generate first.");
         return;
     }
 
-    const options = {
-        margin: 5,
-        filename: 'Income_Tax_Calculation.pdf',
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    const opt = {
+        margin:       [10,10,10,10],   // top, left, bottom, right
+        filename:     'Income_Tax_Calculation.pdf',
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all'] }
     };
 
-    html2pdf().set(options).from(element).save();
+    html2pdf().set(opt).from(element).save();
 }
+
 
 </script>
 <script src="https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 
 </body>
 </html>
+
