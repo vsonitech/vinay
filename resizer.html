@@ -227,16 +227,21 @@ function validateFiles(){
   const input = document.getElementById('imageInput');
   const files = input.files;
   const fileInfo = document.getElementById('fileInfo');
+  const compressBtn = document.querySelector('.compress-btn');
+
+  fileInfo.style.display = "none";
+  compressBtn.disabled = true;
+
+  if(files.length === 0) return;
 
   if(files.length > 3){
-    alert("You can select maximum 3 files only.");
+    fileInfo.innerHTML = `
+      <span style="color:red;">
+      ❌ You can select maximum 3 files only.
+      </span>
+    `;
+    fileInfo.style.display = "block";
     input.value = "";
-    fileInfo.style.display="none";
-    return;
-  }
-
-  if(files.length === 0){
-    fileInfo.style.display="none";
     return;
   }
 
@@ -250,18 +255,34 @@ function validateFiles(){
     ${names}
   `;
   fileInfo.style.display="block";
+  compressBtn.disabled = false;
 }
+
 
 async function compressImages(){
 
-  const files = document.getElementById('imageInput').files;
+  const input = document.getElementById('imageInput');
+  const files = input.files;
   const targetKB = parseInt(document.getElementById('targetSize').value);
   const progressBar = document.getElementById("progressBar");
   const progressContainer = document.getElementById("progressContainer");
   const previewGrid = document.getElementById("previewGrid");
 
-  if(files.length === 0) return alert("Please select images.");
-  if(!targetKB || targetKB <= 0) return alert("Enter valid target size.");
+  if(files.length === 0){
+    alert("Please select images.");
+    return;
+  }
+
+  if(files.length > 3){
+    alert("Maximum 3 files allowed.");
+    input.value="";
+    return;
+  }
+
+  if(!targetKB || targetKB <= 0){
+    alert("Enter valid target size.");
+    return;
+  }
 
   previewGrid.innerHTML = "";
   progressContainer.style.display = "block";
@@ -296,4 +317,27 @@ async function compressImages(){
     const info = document.createElement("div");
     info.innerHTML = `
       <strong>${file.name}</strong><br>
-      ${(compressedFile.size/1024).to
+      ${(compressedFile.size/1024).toFixed(1)} KB
+    `;
+
+    const downloadBtn = document.createElement("button");
+    downloadBtn.className = "download-btn";
+    downloadBtn.innerText = "Download";
+    downloadBtn.onclick = function(){
+      const a = document.createElement("a");
+      a.href = img.src;
+      a.download = "compressed_"+file.name;
+      a.click();
+    };
+
+    previewItem.appendChild(img);
+    previewItem.appendChild(info);
+    previewItem.appendChild(downloadBtn);
+
+    previewGrid.appendChild(previewItem);
+
+    progressBar.style.width = ((i+1)*progressStep)+"%";
+  }
+}
+
+</script>
