@@ -260,20 +260,6 @@ async function startCompression(){
   successMsg.style.animation="fadeIn 0.5s ease-in-out";
   successMsg.innerHTML="🎉 Image Compression Completed Successfully!";
 }
-      function reduce(){
-        canvas.toBlob(function(blob){
-          if(blob.size/1024<=targetKB || quality<=0.1){
-            resolve(blob);
-          } else {
-            quality-=0.1;
-            reduce();
-          }
-        },"image/jpeg",quality);
-      }
-      reduce();
-    };
-  });
-}
 
 async function compressPDF(file){
   const { PDFDocument } = PDFLib;
