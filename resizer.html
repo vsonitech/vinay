@@ -3,262 +3,290 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Image & PDF Compressor</title>
-
-<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<title>Smart Image Compressor</title>
 
 <style>
-body{
-  font-family:Calibri,Arial;
-  background:#f4f6f9;
-  margin:0;
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+  padding: 0;
 }
 
-.container{
-  max-width:520px;
-  margin:auto;
-  background:#fff;
-  padding:20px;
-  box-shadow:0 0 10px rgba(0,0,0,.08);
-  border-radius:10px;
+.container {
+  max-width: 540px;
+  margin: 20px auto;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-h2{
-  text-align:center;
-  margin-top:5px;
+h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #111;
 }
 
-.type-select{
-  text-align:center;
-  margin-bottom:10px;
+.type-select {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 15px;
 }
 
-.upload-box{
-  border:2px dashed #cbd5e1;
-  padding:20px;
-  text-align:center;
-  border-radius:8px;
-  cursor:pointer;
-  background:#f8fafc;
-  transition:.3s;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-weight:bold;
-  font-size:15px;
-}
-.upload-box:hover{
-  background:#eef2ff;
-}
-input[type=file]{display:none;}
-
-input[type=number]{
-  width:100%;
-  padding:8px;
-  margin-top:8px;
+.upload-box {
+  border: 2px dashed #cbd5e1;
+  padding: 18px;
+  text-align: center;
+  border-radius: 8px;
+  background: #f8fafc;
+  margin: 0 auto;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  width: 90%;
 }
 
-button{
-  background:#2563eb;
-  color:#fff;
-  border:none;
-  padding:10px;
-  width:100%;
-  margin-top:15px;
-  border-radius:6px;
-  font-size:15px;
-  cursor:pointer;
-}
-button:hover{
-  background:#1e40af;
+#fileInput {
+  display: none;
 }
 
-.progress{
-  height:8px;
-  background:#e5e7eb;
-  border-radius:4px;
-  margin-top:15px;
-  overflow:hidden;
-  display:none;
-}
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:#22c55e;
-  transition:.4s;
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 15px;
 }
 
-.file-list{
-  margin-top:10px;
-  font-size:14px;
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.preview img{
-  max-width:100%;
-  margin-top:10px;
-  border-radius:6px;
+button:hover {
+  background: #1d4ed8;
 }
 
-.success{
-  background:#ecfdf5;
-  color:#065f46;
-  padding:10px;
-  border-radius:6px;
-  margin-top:15px;
-  display:none;
+.progress {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 14px;
+  display: none;
 }
 
-.download-area div{
-  margin-top:12px;
-  padding:10px;
-  background:#f8fafc;
-  border-radius:8px;
-  font-size:14px;
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #22c55e;
+  transition: 0.3s ease;
 }
 
-footer{
-  margin-top:20px;
-  padding:15px;
-  text-align:center;
-  font-size:14px;
-  background:#111827;   /* Dark gray instead of blue */
-  color:#e5e7eb;
-  border-radius:10px;
+.file-list {
+  font-size: 14px;
+  margin-top: 10px;
 }
 
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(5px);}
-  to{opacity:1;transform:translateY(0);}
+.preview img {
+  max-width: 100%;
+  margin-top: 12px;
+  border-radius: 6px;
+}
+
+.download-area div {
+  margin: 12px 0;
+  padding: 10px;
+  background: #edf2fb;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 14px;
+  background: #111827;
+  color: #e5e7eb;
+  border-radius: 8px;
+}
+
+footer b {
+  color: #fbbf24;
 }
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
-<h2>Smart Image & PDF Compressor</h2>
+  <h2>Smart Image Compressor</h2>
 
-<div class="type-select">
-  <label>
-    <input type="radio" name="fileType" value="image" checked> Image
-  </label>
-  &nbsp;&nbsp;
-  <label style="color:gray;">
-    <input type="radio" name="fileType" value="pdf" disabled> PDF (Coming Soon)
-  </label>
+  <!-- PDF Option Disabled -->
+  <div class="type-select">
+    <label>
+      <input type="radio" name="fileType" value="image" checked> Image
+    </label>
+    &nbsp;&nbsp;
+    <label style="color:gray;">
+      <input type="radio" name="fileType" value="pdf" disabled> PDF (Coming Soon)
+    </label>
+  </div>
+
+  <p style="font-size:14px; text-align:center;">
+    Select up to <b>3 images</b>
+  </p>
+
+  <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+    📁 Choose Files
+  </div>
+
+  <input type="file" id="fileInput" multiple accept="image/*">
+  <div class="file-list" id="fileList"></div>
+
+  <label><b>Select how many KB</b></label>
+  <input type="number" id="targetKB" value="50">
+
+  <button onclick="startCompression()">Compress Files</button>
+
+  <div class="progress" id="progressBox">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="preview" id="preview"></div>
+  <div class="download-area" id="downloadArea"></div>
+
 </div>
-
-<p style="font-size:14px;text-align:center">
-Select up to <b>3 files</b>
-</p>
-
-<label class="upload-box">
-  Choose Files
-  <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
-</label>
-
-<div class="file-list" id="fileList"></div>
-
-<label><b>Select how many KB</b></label>
-<input type="number" id="targetKB" value="50">
-
-<button onclick="startCompression()">Compress Files</button>
-
-<div class="progress" id="progressBox">
-  <div class="progress-bar" id="progressBar"></div>
-</div>
-
-<div class="preview" id="preview"></div>
-<div class="success" id="successMsg"></div>
-<div class="download-area" id="downloadArea"></div>
 
 <footer>
-Smart Compressor Tool • Free Online Utility <br>
-Designed by with ❤️ by Vinay Soni
+  Smart Compressor Tool • Free Online Utility <br>
+  Designed with ❤️ by <b>Vinay Soni</b>
 </footer>
 
-</div>
-
 <script>
-
 const fileInput = document.getElementById("fileInput");
+const fileList = document.getElementById("fileList");
 const progressBox = document.getElementById("progressBox");
 const progressBar = document.getElementById("progressBar");
-const successMsg = document.getElementById("successMsg");
-const downloadArea = document.getElementById("downloadArea");
 const preview = document.getElementById("preview");
+const downloadArea = document.getElementById("downloadArea");
+
 fileInput.addEventListener("change", validateFiles);
 
-function switchType(){
-  const type = document.querySelector('input[name="fileType"]:checked').value;
-  fileInput.accept = (type==="image") ? "image/*" : "application/pdf";
-  fileInput.value="";
-  fileList.innerHTML="";
+function validateFiles() {
+  const files = fileInput.files;
+  if (files.length > 3) {
+    alert("Maximum 3 images allowed.");
+    fileInput.value = "";
+    fileList.innerHTML = "";
+    return;
+  }
+
+  let list = "";
+  for (let i = 0; i < files.length; i++) {
+    let sizeKB = (files[i].size / 1024).toFixed(1);
+    list += `${i+1}. 🖼 ${files[i].name} (${sizeKB} KB)<br>`;
+  }
+  fileList.innerHTML = list;
 }
 
-function validateFiles(){
+async function startCompression() {
   const files = fileInput.files;
-
-  if(files.length > 3){
-    alert("Maximum 3 files allowed.");
-    fileInput.value="";
-    fileList.innerHTML="";
+  if (!files.length) {
+    alert("Please select images.");
+    return;
+  }
+  if (files.length > 3) {
+    alert("Maximum 3 images allowed.");
     return;
   }
 
-  let list="";
-  for(let i=0;i<files.length;i++){
-    let icon = files[i].type.includes("image") ? "🖼" : "📄";
-    let sizeKB = (files[i].size/1024).toFixed(1);
-    list += `${i+1}. ${icon} ${files[i].name} (${sizeKB} KB)<br>`;
-  }
-  fileList.innerHTML=list;
-}
+  const targetKB = parseInt(document.getElementById("targetKB").value) || 50;
 
-async function startCompression(){
-  const files = fileInput.files;
+  progressBox.style.display = "block";
+  progressBar.style.width = "0%";
+  preview.innerHTML = "";
+  downloadArea.innerHTML = "";
 
-  if(!files.length){
-    alert("Please select image file(s)");
-    return;
-  }
-
-  if(files.length > 3){
-    alert("Maximum 3 files allowed.");
-    return;
-  }
-
-  const targetKB = parseInt(document.getElementById("targetKB").value);
-
-  progressBox.style.display="block";
-  progressBar.style.width="0%";
-  successMsg.style.display="none";
-  downloadArea.innerHTML="";
-  preview.innerHTML="";
-
-  for(let i=0;i<files.length;i++){
-
-    if(!files[i].type.includes("image")){
-      alert("Only image files allowed.");
-      return;
-    }
-
-    const originalSizeKB = (files[i].size/1024).toFixed(1);
-
-    const compressedBlob = await compressImage(files[i],targetKB);
-
+  for (let i = 0; i < files.length; i++) {
+    const originalSizeKB = (files[i].size / 1024).toFixed(1);
+    const compressedBlob = await compressImage(files[i], targetKB);
     showPreview(compressedBlob);
-
     createDownloadButton(compressedBlob, files[i].name, originalSizeKB, targetKB);
-
-    progressBar.style.width=((i+1)/files.length*100)+"%";
+    progressBar.style.width = `${((i+1)/files.length)*100}%`;
   }
-
-  successMsg.style.display="block";
-  successMsg.style.animation="fadeIn 0.5s ease-in-out";
-  successMsg.innerHTML="🎉 Image Compression Completed Successfully!";
 }
 
+function compressImage(file, targetKB) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+
+      let quality = 0.7;
+      function reduce() {
+        canvas.toBlob(blob => {
+          if (blob.size/1024 <= targetKB || quality <= 0.1) {
+            resolve(blob);
+          } else {
+            quality -= 0.1;
+            reduce();
+          }
+        }, "image/jpeg", quality);
+      }
+      reduce();
+    };
+  });
+}
+
+function showPreview(blob) {
+  const img = document.createElement("img");
+  img.src = URL.createObjectURL(blob);
+  preview.appendChild(img);
+}
+
+function createDownloadButton(blob, originalName, originalSizeKB, targetKB) {
+  const compressedSizeKB = (blob.size/1024).toFixed(1);
+  const reduction = ((1 - (blob.size/(originalSizeKB*1024))) * 100).toFixed(1);
+
+  const newName = originalName.replace(/\.[^/.]+$/, "") + "_" + targetKB + "KB.jpg";
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = `
+    <b>${newName}</b><br>
+    Original: ${originalSizeKB} KB<br>
+    Compressed: ${compressedSizeKB} KB<br>
+    Reduction: <span style="color:green;font-weight:bold">${reduction}%</span>
+  `;
+
+  const btn = document.createElement("button");
+  btn.textContent = "⬇ Download";
+  btn.onclick = () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = newName;
+    a.click();
+  };
+
+  wrapper.appendChild(btn);
+  downloadArea.appendChild(wrapper);
+}
 </script>
+
 </body>
-</html>
+  </html>
