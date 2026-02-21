@@ -3,345 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Image Resizer</title>
+<title>Smart Image & PDF Compressor</title>
 
-<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Inter',sans-serif;
-}
-
 body{
-  background:linear-gradient(135deg,#e0f2fe,#f8fafc);
-  padding-bottom:70px;
+  font-family:Arial, sans-serif;
+  background:#f4f6f9;
+  margin:0;
 }
-
-header{
-  background:#0f172a;
-  color:#fff;
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-header h1{
-  font-size:16px;
-  font-weight:600;
-}
-
-.home-btn{
-  background:#2563eb;
-  color:#fff;
-  padding:6px 12px;
-  border-radius:8px;
-  text-decoration:none;
-  font-size:13px;
-}
-
 .container{
-  padding:20px;
-  display:flex;
-  justify-content:center;
-}
-
-.card{
+  max-width:520px;
+  margin:auto;
   background:#fff;
-  width:100%;
-  max-width:850px;
-  padding:25px;
-  border-radius:18px;
-  box-shadow:0 15px 40px rgba(0,0,0,0.08);
+  padding:20px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
 }
-
-.instruction{
+h2{text-align:center;margin-top:5px}
+.home-btn{
+  text-decoration:none;
+  color:#2563eb;
   font-size:14px;
-  margin-bottom:10px;
-  color:#475569;
 }
-
-.upload-btn{
-  display:inline-block;
-  padding:12px 18px;
-  background:#2563eb;
-  color:#fff;
-  border-radius:10px;
+.upload-box{
+  border:2px dashed #cbd5e1;
+  padding:20px;
+  text-align:center;
+  border-radius:8px;
   cursor:pointer;
-  font-weight:600;
+  background:#f8fafc;
 }
-
-input[type="file"]{
-  display:none;
-}
-
-label.size-label{
-  display:block;
-  margin-top:15px;
-  margin-bottom:6px;
-  font-size:14px;
-  font-weight:600;
-  color:#334155;
-}
-
-input[type="number"]{
+.upload-box:hover{background:#eef2ff}
+input[type=file]{display:none}
+input[type=number]{
   width:100%;
   padding:10px;
-  border-radius:10px;
-  border:1px solid #e2e8f0;
+  margin-top:8px;
 }
-
-button.compress-btn{
-  width:100%;
-  padding:13px;
-  margin-top:15px;
-  border:none;
-  border-radius:12px;
-  background:#16a34a;
+button{
+  background:#2563eb;
   color:#fff;
-  font-weight:600;
+  border:none;
+  padding:12px;
+  width:100%;
+  margin-top:15px;
+  border-radius:6px;
+  font-size:16px;
   cursor:pointer;
 }
-
-.file-info{
-  margin-top:15px;
-  font-size:14px;
-  background:#f1f5f9;
-  padding:12px;
-  border-radius:10px;
-}
-
+button:hover{background:#1e40af}
 .progress{
   height:8px;
-  background:#e2e8f0;
-  border-radius:20px;
+  background:#e5e7eb;
+  border-radius:4px;
   margin-top:15px;
   overflow:hidden;
   display:none;
 }
-
 .progress-bar{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,#16a34a,#22c55e);
-  transition:0.3s;
+  background:#22c55e;
 }
-
-.preview-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
-  gap:12px;
-  margin-top:20px;
-}
-
-.preview-item{
-  background:#f1f5f9;
-  padding:10px;
-  border-radius:12px;
-  text-align:center;
-  font-size:12px;
-}
-
-.preview-item img{
+.preview img{
   max-width:100%;
-  border-radius:8px;
-  margin-bottom:8px;
+  margin-top:10px;
+  border-radius:6px;
 }
-
-.download-btn{
-  margin-top:8px;
-  padding:6px 10px;
-  background:#2563eb;
-  color:white;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:12px;
+.file-list{
+  margin-top:10px;
+  font-size:14px;
 }
-
+.success{
+  background:#ecfdf5;
+  color:#065f46;
+  padding:10px;
+  border-radius:6px;
+  margin-top:15px;
+  display:none;
+}
+.download a{
+  display:block;
+  margin-top:10px;
+  text-decoration:none;
+  color:#2563eb;
+  font-weight:bold;
+}
 footer{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#ffffff;
+  margin-top:auto;
   text-align:center;
-  padding:12px;
   font-size:13px;
-  border-top:1px solid #e2e8f0;
-  color:#64748b;
-}
-
-footer span{
-  font-weight:600;
-  color:#0f172a;
+  color:#6b7280;
+  padding-top:20px;
 }
 </style>
 </head>
 
 <body>
-
-<header>
-  <h1>Smart Image Compressor</h1>
-  <a href="resizer.html" class="home-btn">Home</a>
-</header>
-
 <div class="container">
-<div class="card">
 
-<div class="instruction">
-  <strong>Select Image(s)</strong> <i>Max. 3 files allowed</i>
-</div>
+<a class="home-btn" href="#">← Home</a>
 
-<label class="upload-btn">
-  Choose Images
-  <input type="file" id="imageInput" accept="image/*" multiple onchange="validateFiles()">
+<h2>Smart Image & PDF Compressor</h2>
+
+<p style="font-size:14px;text-align:center">
+Select up to <b>3 files</b> (Image or PDF)
+</p>
+
+<label class="upload-box">
+Choose Files
+<input type="file" id="fileInput" multiple accept="image/*,application/pdf">
 </label>
 
-<div class="file-info" id="fileInfo" style="display:none;"></div>
+<div class="file-list" id="fileList"></div>
 
-<label class="size-label">Select target size in KB</label>
-<input type="number" id="targetSize" placeholder="Enter max size (e.g. 50)" value="50">
+<label><b>Select how many KB</b></label>
+<input type="number" id="targetKB" value="50">
 
-<button class="compress-btn" onclick="compressImages()">Compress Selected Images</button>
+<button onclick="startCompression()">Compress Files</button>
 
-<div class="progress" id="progressContainer">
+<div class="progress" id="progressBox">
   <div class="progress-bar" id="progressBar"></div>
 </div>
 
-<div class="preview-grid" id="previewGrid"></div>
-
-</div>
-</div>
+<div class="preview" id="preview"></div>
+<div class="success" id="successMsg"></div>
+<div class="download" id="downloadLinks"></div>
 
 <footer>
-  Designed by <span>Vinay Soni - Lath GSSSM</span>
+© 2026 • Smart Compressor • Built with ❤️ by <b>Vinay Soni</b>
 </footer>
 
+</div>
+
 <script>
+const fileInput = document.getElementById("fileInput");
+const fileList = document.getElementById("fileList");
+
+fileInput.addEventListener("change", validateFiles);
 
 function validateFiles(){
-  const input = document.getElementById('imageInput');
-  const files = input.files;
-  const fileInfo = document.getElementById('fileInfo');
-  const compressBtn = document.querySelector('.compress-btn');
-
-  fileInfo.style.display = "none";
-  compressBtn.disabled = true;
-
-  if(files.length === 0) return;
+  const files = fileInput.files;
 
   if(files.length > 3){
-    fileInfo.innerHTML = `
-      <span style="color:red;">
-      ❌ You can select maximum 3 files only.
-      </span>
-    `;
-    fileInfo.style.display = "block";
-    input.value = "";
+    alert("You can select maximum 3 files only.");
+    fileInput.value="";
+    fileList.innerHTML="";
     return;
   }
 
-  let names = "";
-for(let i=0;i<files.length;i++){
-  let sizeKB = (files[i].size / 1024).toFixed(1);
-  names += (i+1) + ". " + files[i].name + 
-           " (" + sizeKB + " KB)" + "<br>";
+  let list="";
+  for(let i=0;i<files.length;i++){
+    list += (i+1)+". "+files[i].name+" ("+(files[i].size/1024).toFixed(1)+" KB)<br>";
+  }
+  fileList.innerHTML = list;
 }
 
-  fileInfo.innerHTML = `
-    <strong>${files.length} file(s) selected:</strong><br><br>
-    ${names}
-  `;
-  fileInfo.style.display="block";
-  compressBtn.disabled = false;
-}
+async function startCompression(){
+  const files = fileInput.files;
+  if(!files.length) return;
 
+  document.getElementById("progressBox").style.display="block";
+  document.getElementById("successMsg").style.display="none";
+  document.getElementById("downloadLinks").innerHTML="";
+  document.getElementById("preview").innerHTML="";
 
-async function compressImages(){
-
-  const input = document.getElementById('imageInput');
-  const files = input.files;
-  const targetKB = parseInt(document.getElementById('targetSize').value);
+  const targetKB = parseInt(document.getElementById("targetKB").value);
   const progressBar = document.getElementById("progressBar");
-  const progressContainer = document.getElementById("progressContainer");
-  const previewGrid = document.getElementById("previewGrid");
 
-  if(files.length === 0){
-    alert("Please select images.");
-    return;
-  }
+  for(let i=0;i<files.length;i++){
+    progressBar.style.width = ((i+1)/files.length*100)+"%";
 
-  if(files.length > 3){
-    alert("Maximum 3 files allowed.");
-    input.value="";
-    return;
-  }
-
-  if(!targetKB || targetKB <= 0){
-    alert("Enter valid target size.");
-    return;
-  }
-
-  previewGrid.innerHTML = "";
-  progressContainer.style.display = "block";
-  progressBar.style.width = "0%";
-
-  let progressStep = 100 / files.length;
-
-  for(let i=0; i<files.length; i++){
-
-    let file = files[i];
-    let quality = 0.9;
-    let maxWidth = 1200;
-    let compressedFile = file;
-
-    while(compressedFile.size > targetKB * 1024 && quality > 0.05){
-      const options = {
-        maxWidthOrHeight:maxWidth,
-        initialQuality:quality,
-        useWebWorker:true
-      };
-      compressedFile = await imageCompression(file, options);
-      quality -= 0.05;
-      maxWidth -= 50;
+    let compressed;
+    if(files[i].type.includes("image")){
+      compressed = await compressImage(files[i], targetKB);
+      showPreview(compressed);
+    }else{
+      compressed = await compressPDF(files[i]);
     }
 
-    const previewItem = document.createElement("div");
-    previewItem.className = "preview-item";
-
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(compressedFile);
-
-    const info = document.createElement("div");
-    info.innerHTML = `
-      <strong>${file.name}</strong><br>
-      ${(compressedFile.size/1024).toFixed(1)} KB
-    `;
-
-    const downloadBtn = document.createElement("button");
-    downloadBtn.className = "download-btn";
-    downloadBtn.innerText = "Download";
-    downloadBtn.onclick = function(){
-      const a = document.createElement("a");
-      a.href = img.src;
-      a.download = "compressed_"+file.name;
-      a.click();
-    };
-
-    previewItem.appendChild(img);
-    previewItem.appendChild(info);
-    previewItem.appendChild(downloadBtn);
-
-    previewGrid.appendChild(previewItem);
-
-    progressBar.style.width = ((i+1)*progressStep)+"%";
+    createDownload(compressed, files[i].name);
   }
+
+  document.getElementById("successMsg").style.display="block";
+  document.getElementById("successMsg").innerHTML="✅ Files compressed successfully!";
 }
 
+function compressImage(file, targetKB){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = ()=>{
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img,0,0);
+
+      let quality = 0.7;
+      let blob;
+
+      function reduce(){
+        canvas.toBlob(b=>{
+          if(b.size/1024 <= targetKB || quality <= 0.1){
+            resolve(b);
+          }else{
+            quality -= 0.1;
+            reduce();
+          }
+        },"image/jpeg",quality);
+      }
+      reduce();
+    };
+  });
+}
+
+async function compressPDF(file){
+  const { PDFDocument } = PDFLib;
+  const buffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(buffer);
+  const pdfBytes = await pdfDoc.save({
+    useObjectStreams:true,
+    compress:true
+  });
+  return new Blob([pdfBytes],{type:"application/pdf"});
+}
+
+function showPreview(blob){
+  const img = document.createElement("img");
+  img.src = URL.createObjectURL(blob);
+  document.getElementById("preview").appendChild(img);
+}
+
+function createDownload(blob, name){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "compressed_"+name;
+  a.textContent = "⬇ Download "+a.download;
+  document.getElementById("downloadLinks").appendChild(a);
+}
 </script>
 </body>
 </html>
