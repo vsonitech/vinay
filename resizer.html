@@ -1,318 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Image Compressor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing Tool</title>
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f9;
-  margin: 0;
-  padding: 0;
-}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
-.container {
-  max-width: 540px;
-  margin: 20px auto;
-  padding: 15px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-h2 {
-  text-align: center;
-  margin-bottom: 10px;
-  color: #111;
-}
+    <style>
+        /* Global Reset & Typography */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* Added padding-bottom to prevent content from hiding behind the fixed footer */
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-bottom: 60px; }
 
-.type-select {
-  text-align: center;
-  margin-bottom: 12px;
-  font-size: 15px;
-}
+        /* Attractive Header with Gradient */
+        header { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+            color: #ffffff; 
+            padding: 25px 0; 
+            text-align: center; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+            border-bottom: 3px solid #3b82f6;
+        }
+        header h1 { font-size: 28px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 5px; }
+        header p { font-size: 15px; color: #94a3b8; }
 
-.upload-box {
-  border: 2px dashed #cbd5e1;
-  padding: 18px;
-  text-align: center;
-  border-radius: 8px;
-  background: #f8fafc;
-  margin: 0 auto;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  width: 90%;
-}
+        /* Main Workspace */
+        main { display: flex; justify-content: center; padding: 40px 20px; }
+        .tool-card { background: #ffffff; width: 100%; max-width: 700px; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
 
-#fileInput {
-  display: none;
-}
+        /* Instructions Box */
+        .instructions {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        .instructions ul { margin-top: 8px; margin-left: 20px; }
 
-input[type="number"] {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  font-size: 15px;
-}
+        /* Upload Button */
+        .upload-btn-wrapper { position: relative; overflow: hidden; display: block; width: 100%; text-align: center; margin-bottom: 20px; border: 2px dashed #3b82f6; border-radius: 8px; padding: 35px 20px; background: #f8fafc; cursor: pointer; transition: 0.3s; }
+        .upload-btn-wrapper:hover { background: #eff6ff; border-color: #2563eb; }
+        .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
+        .upload-btn-wrapper span { font-size: 16px; font-weight: 500; color: #3b82f6; }
 
-button {
-  background: #2563eb;
-  color: white;
-  border: none;
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
+        /* Editing Controls */
+        .control-group { margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+        .control-group label { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 12px; font-size: 14px; color: #475569; }
+        
+        /* Rotation Buttons Layout */
+        .rotation-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-rotate { flex: 1; padding: 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s; color: #334155; }
+        .btn-rotate:hover { background: #e2e8f0; }
 
-button:hover {
-  background: #1d4ed8;
-}
+        input[type="range"] { width: 100%; cursor: pointer; margin-bottom: 5px; }
+        input[type="number"] { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; background: #f8fafc; transition: 0.2s; }
+        input[type="number"]:focus { outline: none; border-color: #3b82f6; background: #fff; }
 
-.progress {
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-top: 14px;
-  display: none;
-}
+        /* Primary Action Button */
+        .btn-primary { width: 100%; background: #10b981; color: white; border: none; padding: 16px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: 25px; transition: 0.2s; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); }
+        .btn-primary:hover { background: #059669; transform: translateY(-1px); }
 
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: #22c55e;
-  transition: 0.3s ease;
-}
+        /* Image Display Areas */
+        .image-wrapper { max-height: 450px; overflow: hidden; border-radius: 8px; background: #e2e8f0; display: flex; justify-content: center; align-items: center; }
+        #imageToCrop { max-width: 100%; display: block; }
+        #resultArea { text-align: center; margin-top: 30px; }
 
-.file-list {
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.preview img {
-  max-width: 100%;
-  margin-top: 12px;
-  border-radius: 6px;
-}
-
-.download-area div {
-  margin: 12px 0;
-  padding: 10px;
-  background: #edf2fb;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-footer {
-  text-align: center;
-  margin-top: 20px;
-  padding: 12px;
-  font-size: 14px;
-  background: #111827;
-  color: #e5e7eb;
-  border-radius: 8px;
-}
-
-footer b {
-  color: #fbbf24;
-}
-.header{
-  text-align:center;
-  margin-bottom:15px;
-}
-
-.header h1{
-  margin:0;
-  font-size:26px;
-  font-weight:700;
-  letter-spacing:0.5px;
-  color:#111827;
-}
-
-.header h1 span{
-  color:#2563eb;
-}
-
-.header p{
-  margin:5px 0 0 0;
-  font-size:13px;
-  color:#6b7280;
-  }
-
-</style>
+        /* Locked Professional Footer */
+        footer { 
+            background: #1e293b; 
+            color: #94a3b8; 
+            text-align: center; 
+            padding: 15px 0; 
+            font-size: 14px; 
+            position: fixed; /* Locks to bottom */
+            bottom: 0; 
+            left: 0;
+            width: 100%; 
+            z-index: 1000;
+            border-top: 1px solid #0f172a;
+        }
+        footer a { color: #f8fafc; text-decoration: none; font-weight: 500; }
+        footer a:hover { text-decoration: underline; }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
+    <header>
+        <h1>Image Processing Tool</h1>
+        <p>Professional grade crop, rotate, and file compression</p>
+    </header>
 
-  <div class="header">
-  <h1>Smart <span>Resize</span> Tool</h1>
-  <p>Fast • Secure • Browser-Based Compression</p>
-</div>
+    <main>
+        <div class="tool-card">
+            
+            <div class="instructions">
+                <strong>How to compress your image:</strong>
+                <ul>
+                    <li>Click the dashed box below to select an image from your device.</li>
+                    <li>Use your mouse or finger to drag and resize the crop box.</li>
+                    <li>Use the buttons to rotate 90°, or the slider for a slight tilt.</li>
+                    <li>Enter your maximum allowed KB size and click compress.</li>
+                </ul>
+            </div>
 
-  <!-- PDF Option Disabled -->
-  <div class="type-select">
-    <label>
-      <input type="radio" name="fileType" value="image" checked> Image
-    </label>
-    &nbsp;&nbsp;
-    <label style="color:gray;">
-      <input type="radio" name="fileType" value="pdf" disabled> PDF (Coming Soon)
-    </label>
-  </div>
+            <div class="upload-btn-wrapper">
+                <span>📁 Click or drag an image here to upload</span>
+                <input type="file" id="imageInput" accept="image/*">
+            </div>
+            
+            <div id="editorSpace" style="display: none;">
+                <div class="image-wrapper">
+                    <img id="imageToCrop" alt="Image to process">
+                </div>
+                
+                <div class="control-group">
+                    <label>Image Rotation</label>
+                    <div class="rotation-buttons">
+                        <button class="btn-rotate" onclick="rotateFull(-90)">↺ Rotate -90°</button>
+                        <button class="btn-rotate" onclick="rotateFull(90)">↻ Rotate +90°</button>
+                    </div>
+                    
+                    <label style="margin-top: 10px;">
+                        <span style="font-weight: normal; font-size: 13px;">Fine Tilt Adjustment</span>
+                        <span id="rotationValue" style="color: #3b82f6;">0°</span>
+                    </label>
+                    <input type="range" id="rotationSlider" min="-45" max="45" value="0">
+                </div>
 
-  <p style="font-size:14px; text-align:center;">
-    Select up to <b>3 images</b>
-  </p>
+                <div class="control-group">
+                    <label>Target File Size</label>
+                    <input type="number" id="targetKB" placeholder="Enter size in KB (e.g., 50)">
+                </div>
 
-  <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-    📁 Choose Files
-  </div>
+                <button class="btn-primary" onclick="processAndCompress()">Apply & Compress</button>
+            </div>
 
-  <input type="file" id="fileInput" multiple accept="image/*">
-  <div class="file-list" id="fileList"></div>
+            <div id="resultArea"></div>
+        </div>
+    </main>
 
-  <label><b>Select how many KB</b></label>
-  <input type="number" id="targetKB" value="50">
+    <footer>
+        <p>Built with ❤️ | <a href="https://vinaysoni.netlify.app/">Vinay Soni</a></p>
+    </footer>
 
-  <button onclick="startCompression()">Compress Files</button>
+    <script>
+        let cropper;
+        let baseRotation = 0; // Tracks the 90-degree flips
+        
+        const imageInput = document.getElementById('imageInput');
+        const imageToCrop = document.getElementById('imageToCrop');
+        const editorSpace = document.getElementById('editorSpace');
+        const rotationSlider = document.getElementById('rotationSlider');
+        const rotationValue = document.getElementById('rotationValue');
 
-  <div class="progress" id="progressBox">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
+        // 1. Load Image
+        imageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    imageToCrop.src = event.target.result;
+                    editorSpace.style.display = 'block';
+                    document.getElementById('resultArea').innerHTML = ''; 
+                    
+                    // Reset rotations on new upload
+                    baseRotation = 0;
+                    rotationSlider.value = 0; 
+                    rotationValue.innerText = '0°';
+                    
+                    if (cropper) { cropper.destroy(); }
+                    
+                    cropper = new Cropper(imageToCrop, {
+                        viewMode: 2, 
+                        autoCropArea: 1,
+                        background: true
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-  <div class="preview" id="preview"></div>
-  <div class="download-area" id="downloadArea"></div>
+        // 2. Combined Rotation Logic (90° steps + Slider)
+        function rotateFull(degree) {
+            baseRotation += degree;
+            applyRotation();
+        }
 
-</div>
+        rotationSlider.addEventListener('input', function(e) {
+            rotationValue.innerText = e.target.value + '°';
+            applyRotation();
+        });
 
-<footer>
-  Smart Compressor Tool • Free Online Utility <br>
-  Designed with ❤️ by <b>Vinay Soni</b>
-</footer>
+        function applyRotation() {
+            if (cropper) {
+                const tilt = parseInt(rotationSlider.value) || 0;
+                // Combine the base 90-degree flips with the slider tilt
+                cropper.rotateTo(baseRotation + tilt);
+            }
+        }
 
-<script>
-const fileInput = document.getElementById("fileInput");
-const fileList = document.getElementById("fileList");
-const progressBox = document.getElementById("progressBox");
-const progressBar = document.getElementById("progressBar");
-const preview = document.getElementById("preview");
-const downloadArea = document.getElementById("downloadArea");
+        // 3. Process & Compress
+        function processAndCompress() {
+            const targetKB = parseFloat(document.getElementById('targetKB').value);
+            if (!targetKB) return alert('Please enter a target KB size.');
 
-fileInput.addEventListener("change", validateFiles);
+            document.getElementById('resultArea').innerHTML = "<p style='color:#3b82f6; font-weight:500;'>Processing image... please wait.</p>";
 
-function validateFiles() {
-  const files = fileInput.files;
-  if (files.length > 3) {
-    alert("Maximum 3 images allowed.");
-    fileInput.value = "";
-    fileList.innerHTML = "";
-    return;
-  }
+            const croppedCanvas = cropper.getCroppedCanvas({
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+            });
 
-  let list = "";
-  for (let i = 0; i < files.length; i++) {
-    let sizeKB = (files[i].size / 1024).toFixed(1);
-    list += `${i+1}. 🖼 ${files[i].name} (${sizeKB} KB)<br>`;
-  }
-  fileList.innerHTML = list;
-}
+            const targetBytes = targetKB * 1024;
+            
+            compressCanvas(croppedCanvas, targetBytes, 0.9, function(finalBlob) {
+                const resultArea = document.getElementById('resultArea');
+                const finalUrl = URL.createObjectURL(finalBlob);
+                const finalKB = (finalBlob.size / 1024).toFixed(2);
+                
+                resultArea.innerHTML = `
+                    <h3 style="color: #10b981; margin-bottom: 15px;">✅ Success! Final Size: ${finalKB} KB</h3>
+                    <img src="${finalUrl}" style="max-width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px;">
+                    <br>
+                    <a href="${finalUrl}" download="compressed_image.jpg" style="display: inline-block; background: #3b82f6; color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; transition: 0.2s; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);">⬇️ Download Image</a>
+                `;
+            });
+        }
 
-async function startCompression() {
-  const files = fileInput.files;
-  if (!files.length) {
-    alert("Please select images.");
-    return;
-  }
-  if (files.length > 3) {
-    alert("Maximum 3 images allowed.");
-    return;
-  }
+        // 4. Recursive Compression Core
+        function compressCanvas(canvas, targetBytes, quality, callback) {
+            canvas.toBlob(function(blob) {
+                if (!blob) return;
 
-  const targetKB = parseInt(document.getElementById("targetKB").value) || 50;
+                if (blob.size <= targetBytes || quality <= 0.4) {
+                    if (blob.size > targetBytes) {
+                        shrinkDimensions(canvas, targetBytes, callback);
+                    } else {
+                        callback(blob); 
+                    }
+                    return;
+                }
+                compressCanvas(canvas, targetBytes, quality - 0.1, callback);
+            }, 'image/jpeg', quality);
+        }
 
-  progressBox.style.display = "block";
-  progressBar.style.width = "0%";
-  preview.innerHTML = "";
-  downloadArea.innerHTML = "";
+        // 5. Dimension Shrinker
+        function shrinkDimensions(originalCanvas, targetBytes, callback) {
+            const scaleFactor = 0.8; 
+            const newWidth = originalCanvas.width * scaleFactor;
+            const newHeight = originalCanvas.height * scaleFactor;
 
-  for (let i = 0; i < files.length; i++) {
-    const originalSizeKB = (files[i].size / 1024).toFixed(1);
-    const compressedBlob = await compressImage(files[i], targetKB);
-    showPreview(compressedBlob);
-    createDownloadButton(compressedBlob, files[i].name, originalSizeKB, targetKB);
-    progressBar.style.width = `${((i+1)/files.length)*100}%`;
-  }
-}
+            const newCanvas = document.createElement('canvas');
+            newCanvas.width = newWidth;
+            newCanvas.height = newHeight;
+            const ctx = newCanvas.getContext('2d');
 
-function compressImage(file, targetKB) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      canvas.getContext("2d").drawImage(img, 0, 0);
-
-      let quality = 0.7;
-      function reduce() {
-        canvas.toBlob(blob => {
-          if (blob.size/1024 <= targetKB || quality <= 0.1) {
-            resolve(blob);
-          } else {
-            quality -= 0.1;
-            reduce();
-          }
-        }, "image/jpeg", quality);
-      }
-      reduce();
-    };
-  });
-}
-
-function showPreview(blob) {
-  const img = document.createElement("img");
-  img.src = URL.createObjectURL(blob);
-  preview.appendChild(img);
-}
-
-function createDownloadButton(blob, originalName, originalSizeKB, targetKB) {
-  const compressedSizeKB = (blob.size/1024).toFixed(1);
-  const reduction = ((1 - (blob.size/(originalSizeKB*1024))) * 100).toFixed(1);
-
-  const newName = originalName.replace(/\.[^/.]+$/, "") + "_" + targetKB + "KB.jpg";
-
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = `
-    <b>${newName}</b><br>
-    Original: ${originalSizeKB} KB<br>
-    Compressed: ${compressedSizeKB} KB<br>
-    Reduction: <span style="color:green;font-weight:bold">${reduction}%</span>
-  `;
-
-  const btn = document.createElement("button");
-  btn.textContent = "⬇ Download";
-  btn.onclick = () => {
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = newName;
-    a.click();
-  };
-
-  wrapper.appendChild(btn);
-  downloadArea.appendChild(wrapper);
-}
-</script>
-
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            ctx.drawImage(originalCanvas, 0, 0, newWidth, newHeight);
+            compressCanvas(newCanvas, targetBytes, 0.8, callback);
+        }
+    </script>
 </body>
-  </html>
+</html>
