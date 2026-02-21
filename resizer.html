@@ -140,11 +140,11 @@ footer{
 
 <div class="type-select">
   <label>
-    <input type="radio" name="fileType" value="image" checked onchange="switchType()"> Image
+    <input type="radio" name="fileType" value="image" checked> Image
   </label>
   &nbsp;&nbsp;
-  <label>
-    <input type="radio" name="fileType" value="pdf" onchange="switchType()"> PDF
+  <label style="color:gray;">
+    <input type="radio" name="fileType" value="pdf" disabled> PDF (Coming Soon)
   </label>
 </div>
 
@@ -154,7 +154,7 @@ Select up to <b>3 files</b>
 
 <label class="upload-box">
   Choose Files
-  <input type="file" id="fileInput" multiple accept="image/*">
+  <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
 </label>
 
 <div class="file-list" id="fileList"></div>
@@ -219,12 +219,17 @@ function validateFiles(){
 
 async function startCompression(){
   const files = fileInput.files;
+
   if(!files.length){
-    alert("Please select file(s)");
+    alert("Please select image file(s)");
     return;
   }
 
-  const selectedType = document.querySelector('input[name="fileType"]:checked').value;
+  if(files.length > 3){
+    alert("Maximum 3 files allowed.");
+    return;
+  }
+
   const targetKB = parseInt(document.getElementById("targetKB").value);
 
   progressBox.style.display="block";
@@ -235,23 +240,16 @@ async function startCompression(){
 
   for(let i=0;i<files.length;i++){
 
-    let compressedBlob;
+    if(!files[i].type.includes("image")){
+      alert("Only image files allowed.");
+      return;
+    }
+
     const originalSizeKB = (files[i].size/1024).toFixed(1);
 
-    if(selectedType==="image"){
-      if(!files[i].type.includes("image")){
-        alert("Only image files allowed.");
-        return;
-      }
-      compressedBlob = await compressImage(files[i],targetKB);
-      showPreview(compressedBlob);
-    } else {
-      if(!files[i].type.includes("pdf")){
-        alert("Only PDF files allowed.");
-        return;
-      }
-      compressedBlob = await compressPDF(files[i]);
-    }
+    const compressedBlob = await compressImage(files[i],targetKB);
+
+    showPreview(compressedBlob);
 
     createDownloadButton(compressedBlob, files[i].name, originalSizeKB, targetKB);
 
@@ -260,21 +258,8 @@ async function startCompression(){
 
   successMsg.style.display="block";
   successMsg.style.animation="fadeIn 0.5s ease-in-out";
-  successMsg.innerHTML="🎉 Compression Completed Successfully!";
+  successMsg.innerHTML="🎉 Image Compression Completed Successfully!";
 }
-
-function compressImage(file,targetKB){
-  return new Promise(resolve=>{
-    const img=new Image();
-    img.src=URL.createObjectURL(file);
-    img.onload=function(){
-      const canvas=document.createElement("canvas");
-      canvas.width=img.width;
-      canvas.height=img.height;
-      canvas.getContext("2d").drawImage(img,0,0);
-
-      let quality=0.7;
-
       function reduce(){
         canvas.toBlob(function(blob){
           if(blob.size/1024<=targetKB || quality<=0.1){
