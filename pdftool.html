@@ -3,156 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Processing Tool - PDF</title>
-    
+    <title>Image Processing Tool</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-bottom: 70px; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-bottom: 80px; }
+
         header { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
             color: #ffffff; padding: 25px 0; text-align: center; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom: 3px solid #ef4444;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom: 3px solid #3b82f6;
+            transition: border-color 0.3s;
         }
-        header h1 { font-size: 28px; font-weight: 600; }
-        main { display: flex; justify-content: center; padding: 40px 20px; }
+        header.pdf-theme { border-bottom-color: #ef4444; }
+
+        /* Mode Toggle Switch */
+        .mode-toggle { display: flex; justify-content: center; margin: 20px 0; gap: 10px; }
+        .toggle-btn { padding: 10px 20px; border-radius: 25px; border: 2px solid #3b82f6; background: white; color: #3b82f6; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .toggle-btn.active { background: #3b82f6; color: white; }
+        .toggle-btn.pdf-active { border-color: #ef4444; color: #ef4444; }
+        .toggle-btn.pdf-active.active { background: #ef4444; color: white; }
+
+        main { display: flex; justify-content: center; padding: 20px; }
         .tool-card { background: #ffffff; width: 100%; max-width: 700px; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-        .instructions { background: #fef2f2; border: 1px solid #fee2e2; border-radius: 6px; margin-bottom: 25px; overflow: hidden; font-size: 14px; }
-        .instructions-header { background: #ef4444; color: white; padding: 10px 15px; font-weight: 600; }
+
+        /* Instructions with Dynamic Color */
+        .instructions { border-radius: 6px; margin-bottom: 25px; overflow: hidden; font-size: 14px; border: 1px solid #bfdbfe; background: #eff6ff; }
+        .instructions-header { background: #3b82f6; color: white; padding: 10px 15px; font-weight: 600; }
         .instructions-content { padding: 15px; }
-        .upload-btn-wrapper { position: relative; display: block; width: 100%; text-align: center; margin-bottom: 10px; border: 2px dashed #ef4444; border-radius: 8px; padding: 35px; background: #fffafb; cursor: pointer; }
+
+        .pdf-mode-ui .instructions { background: #fef2f2; border-color: #fee2e2; }
+        .pdf-mode-ui .instructions-header { background: #ef4444; }
+
+        /* Upload Wrapper */
+        .upload-btn-wrapper { position: relative; display: block; text-align: center; margin-bottom: 10px; border: 2px dashed #3b82f6; border-radius: 8px; padding: 35px; background: #f8fafc; cursor: pointer; }
+        .pdf-mode-ui .upload-btn-wrapper { border-color: #ef4444; background: #fffafb; }
         .upload-btn-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; height: 100%; width: 100%; cursor: pointer; }
-        .upload-btn-wrapper span { font-size: 16px; font-weight: 500; color: #ef4444; }
-        #fileInfo { text-align: center; font-size: 14px; color: #64748b; margin-bottom: 20px; display: none; background: #f1f5f9; padding: 10px; border-radius: 6px; }
-        .control-group { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
-        .btn-primary { width: 100%; background: #ef4444; color: white; border: none; padding: 16px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: 25px; }
-        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+
+        #fileInfo { text-align: center; font-size: 14px; color: #64748b; font-weight: 500; margin-bottom: 20px; display: none; background: #f1f5f9; padding: 10px; border-radius: 6px; }
+
+        .control-group { margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+        .control-group label { display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; margin-bottom: 10px; }
+
+        .btn-primary { width: 100%; color: white; border: none; padding: 16px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: 25px; transition: 0.2s; }
+        .btn-img { background: #10b981; }
+        .btn-pdf { background: #ef4444; }
+
+        .image-wrapper { max-height: 450px; overflow: hidden; border-radius: 8px; background: #e2e8f0; display: flex; justify-content: center; align-items: center; }
+        #imageToCrop { max-width: 100%; display: block; }
         #resultArea { text-align: center; margin-top: 30px; }
-        footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 15px 0; font-size: 14px; position: fixed; bottom: 0; width: 100%; }
+
+        footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 15px 0; font-size: 14px; position: fixed; bottom: 0; width: 100%; z-index: 1000; }
     </style>
 </head>
-<body>
+<body id="body">
 
-    <header>
-        <h1>PDF Processing Tool</h1>
-        <p>Compress PDF by Optimizing Internal Images</p>
+    <header id="mainHeader">
+        <h1 id="headerTitle">Image Processing Tool</h1>
+        <p>Professional grade file optimization</p>
     </header>
 
+    <div class="mode-toggle">
+        <button id="imgModeBtn" class="toggle-btn active" onclick="switchMode('img')">Image Mode</button>
+        <button id="pdfModeBtn" class="toggle-btn" onclick="switchMode('pdf')">PDF Mode</button>
+    </div>
+
     <main>
-        <div class="tool-card">
+        <div class="tool-card" id="mainCard">
+            
             <div class="instructions">
-                <div class="instructions-header">Instructions:</div>
-                <div class="instructions-content">
-                    <ul>
-                        <li>Upload a PDF to reduce its file size.</li>
-                        <li>This tool re-renders pages with compressed image quality.</li>
-                        <li><strong>Note:</strong> Very large PDFs may take a few seconds to process.</li>
+                <div class="instructions-header" id="instHeader">Instructions:</div>
+                <div class="instructions-content" id="instContent">
+                    <ul id="instList">
+                        <li>Select an image to crop and compress.</li>
+                        <li>Rotate or tilt for the perfect angle.</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="upload-btn-wrapper">
-                <span>📄 Click to upload PDF</span>
-                <input type="file" id="pdfInput" accept="application/pdf">
+            <div class="upload-btn-wrapper" id="uploadBox">
+                <span id="uploadText">📁 Click to upload Image</span>
+                <input type="file" id="fileInput">
             </div>
 
             <div id="fileInfo"></div>
 
-            <div class="control-group" id="settings" style="display:none;">
-                <label style="font-weight:600; font-size:14px;">Compression Level (Quality)</label>
-                <input type="range" id="qualitySlider" min="0.1" max="0.9" step="0.1" value="0.5" style="width:100%; margin-top:10px;">
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:#666;">
-                    <span>Small File (Lower Quality)</span>
-                    <span>Better Quality</span>
+            <div id="imageEditor" style="display: none;">
+                <div class="image-wrapper"><img id="imageToCrop"></div>
+                <div class="control-group">
+                    <label>Controls <span id="rotationValue" style="color:#3b82f6">0°</span></label>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <button class="toggle-btn" style="flex:1" onclick="rotateFull(-90)">↺ -90°</button>
+                        <button class="toggle-btn" style="flex:1" onclick="rotateFull(90)">↻ +90°</button>
+                        <button class="toggle-btn" style="flex:1; border-color:#fca5a5; color:#991b1b" onclick="resetEditor()">Reset</button>
+                    </div>
+                    <input type="range" id="rotationSlider" min="-45" max="45" value="0" style="width:100%">
                 </div>
+                <div class="control-group">
+                    <label>Target KB</label>
+                    <input type="number" id="targetKB" placeholder="e.g. 50" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:6px;">
+                </div>
+                <button class="btn-primary btn-img" onclick="processImage()">Compress Image</button>
             </div>
 
-            <button class="btn-primary" id="compressBtn" style="display:none;" onclick="startCompression()">Compress PDF</button>
+            <div id="pdfEditor" style="display: none;">
+                <div class="control-group">
+                    <label>Quality Slider <span id="qVal" style="color:#ef4444">0.5</span></label>
+                    <input type="range" id="qualitySlider" min="0.1" max="0.9" step="0.1" value="0.5" style="width:100%" oninput="document.getElementById('qVal').innerText=this.value">
+                    <p style="font-size:11px; color:#666; margin-top:5px;">Lower quality = Smaller file size.</p>
+                </div>
+                <button class="btn-primary btn-pdf" onclick="processPDF()">Compress PDF</button>
+            </div>
 
             <div id="resultArea"></div>
         </div>
     </main>
 
     <footer>
-        <p>Image Processing Tool | <a href="#" style="color:white; text-decoration:none;">PDF Utility</a></p>
+        <p>Designed with ❤️ | Vinay Soni</p>
     </footer>
 
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        let currentMode = 'img';
+        let cropper, baseRotation = 0;
 
-        const pdfInput = document.getElementById('pdfInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const compressBtn = document.getElementById('compressBtn');
-        const settings = document.getElementById('settings');
-        const resultArea = document.getElementById('resultArea');
+        function switchMode(mode) {
+            currentMode = mode;
+            const isPdf = mode === 'pdf';
+            
+            // UI Styling Updates
+            document.getElementById('mainHeader').className = isPdf ? 'pdf-theme' : '';
+            document.getElementById('mainCard').className = isPdf ? 'tool-card pdf-mode-ui' : 'tool-card';
+            document.getElementById('imgModeBtn').className = isPdf ? 'toggle-btn' : 'toggle-btn active';
+            document.getElementById('pdfModeBtn').className = isPdf ? 'toggle-btn pdf-active active' : 'toggle-btn pdf-active';
+            
+            // Content Updates
+            document.getElementById('headerTitle').innerText = isPdf ? "PDF Processing Tool" : "Image Processing Tool";
+            document.getElementById('uploadText').innerText = isPdf ? "📄 Click to upload PDF" : "📁 Click to upload Image";
+            document.getElementById('fileInput').accept = isPdf ? "application/pdf" : "image/*";
+            
+            document.getElementById('instList').innerHTML = isPdf 
+                ? "<li>Upload PDF to shrink size.</li><li>Adjust slider for quality/size balance.</li>"
+                : "<li>Select an image to crop and compress.</li><li>Rotate or tilt for the perfect angle.</li>";
 
-        pdfInput.addEventListener('change', function(e) {
+            // Reset UI
+            document.getElementById('fileInput').value = "";
+            document.getElementById('fileInfo').style.display = "none";
+            document.getElementById('imageEditor').style.display = "none";
+            document.getElementById('pdfEditor').style.display = "none";
+            document.getElementById('resultArea').innerHTML = "";
+            if(cropper) cropper.destroy();
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (file) {
-                fileInfo.innerText = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
-                fileInfo.style.display = 'block';
-                compressBtn.style.display = 'block';
-                settings.style.display = 'block';
-                resultArea.innerHTML = '';
+            if (!file) return;
+            
+            document.getElementById('fileInfo').innerText = `File: ${file.name} (${(file.size/1024).toFixed(2)} KB)`;
+            document.getElementById('fileInfo').style.display = "block";
+
+            if (currentMode === 'img') {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    document.getElementById('imageToCrop').src = ev.target.result;
+                    document.getElementById('imageEditor').style.display = "block";
+                    if(cropper) cropper.destroy();
+                    cropper = new Cropper(document.getElementById('imageToCrop'), { viewMode: 2, autoCropArea: 1 });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('pdfEditor').style.display = "block";
             }
         });
 
-        async function startCompression() {
-            const file = pdfInput.files[0];
-            if (!file) return;
+        // Image Logic
+        function rotateFull(deg) { baseRotation += deg; applyRot(); }
+        document.getElementById('rotationSlider').oninput = (e) => { 
+            document.getElementById('rotationValue').innerText = e.target.value + '°'; 
+            applyRot(); 
+        };
+        function applyRot() { if(cropper) cropper.rotateTo(baseRotation + parseInt(document.getElementById('rotationSlider').value)); }
+        function resetEditor() { if(cropper) { cropper.reset(); baseRotation=0; document.getElementById('rotationSlider').value=0; applyRot(); } }
 
-            compressBtn.disabled = true;
-            const quality = parseFloat(document.getElementById('qualitySlider').value);
-            resultArea.innerHTML = "<p style='color:#ef4444;'>Rendering & Compressing pages... please wait.</p>";
+        async function processImage() {
+            const targetKB = parseFloat(document.getElementById('targetKB').value);
+            if (!targetKB) return alert("Enter target KB");
+            const canvas = cropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
+            compressCanvas(canvas, targetKB * 1024, 0.9, (blob) => finalize(blob, 'img'));
+        }
 
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-                const { jsPDF } = window.jspdf;
-                const outPdf = new jsPDF();
+        function compressCanvas(canvas, target, q, cb) {
+            canvas.toBlob((blob) => {
+                if(blob.size <= target || q <= 0.4) {
+                    if(blob.size > target) {
+                        const nc = document.createElement('canvas');
+                        nc.width = canvas.width * 0.8; nc.height = canvas.height * 0.8;
+                        const ctx = nc.getContext('2d');
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(canvas, 0, 0, nc.width, nc.height);
+                        compressCanvas(nc, target, 0.8, cb);
+                    } else { cb(blob); }
+                } else { compressCanvas(canvas, target, q - 0.1, cb); }
+            }, 'image/jpeg', q);
+        }
 
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const viewport = page.getViewport({ scale: 1.5 }); // Balanced scale for quality/size
-                    
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
+        // PDF Logic
+        async function processPDF() {
+            const file = document.getElementById('fileInput').files[0];
+            const q = parseFloat(document.getElementById('qualitySlider').value);
+            document.getElementById('resultArea').innerHTML = "Processing PDF...";
+            
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+            const { jsPDF } = window.jspdf;
+            const outPdf = new jsPDF();
 
-                    await page.render({ canvasContext: context, viewport: viewport }).promise;
-
-                    // Convert page to compressed JPEG
-                    const imgData = canvas.toDataURL('image/jpeg', quality);
-                    
-                    if (i > 1) outPdf.addPage([viewport.width, viewport.height], viewport.width > viewport.height ? 'l' : 'p');
-                    
-                    // Add compressed image to new PDF
-                    outPdf.setPage(i);
-                    outPdf.addImage(imgData, 'JPEG', 0, 0, outPdf.internal.pageSize.getWidth(), outPdf.internal.pageSize.getHeight(), undefined, 'FAST');
-                }
-
-                const outBlob = outPdf.output('blob');
-                const now = new Date();
-                const timestamp = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
-                const fileName = `PDF_${timestamp}.pdf`;
-                const url = URL.createObjectURL(outBlob);
-
-                resultArea.innerHTML = `
-                    <h3 style="color: #10b981; margin-bottom: 15px;">✅ Success! Final Size: ${(outBlob.size / 1024).toFixed(2)} KB</h3>
-                    <a href="${url}" download="${fileName}" style="display: inline-block; background: #ef4444; color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600;">⬇️ Download Compressed PDF</a>
-                `;
-            } catch (err) {
-                console.error(err);
-                resultArea.innerHTML = "<p style='color:red;'>Error. Try a different PDF file.</p>";
-            } finally {
-                compressBtn.disabled = false;
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const vp = page.getViewport({ scale: 1.5 });
+                const canvas = document.createElement('canvas');
+                canvas.height = vp.height; canvas.width = vp.width;
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+                const data = canvas.toDataURL('image/jpeg', q);
+                if (i > 1) outPdf.addPage([vp.width, vp.height], vp.width > vp.height ? 'l' : 'p');
+                outPdf.setPage(i);
+                outPdf.addImage(data, 'JPEG', 0, 0, outPdf.internal.pageSize.getWidth(), outPdf.internal.pageSize.getHeight());
             }
+            finalize(outPdf.output('blob'), 'pdf');
+        }
+
+        function finalize(blob, type) {
+            const now = new Date();
+            const time = `${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+            const name = type === 'img' ? `Image_${time}.jpg` : `PDF_${time}.pdf`;
+            const url = URL.createObjectURL(blob);
+            document.getElementById('resultArea').innerHTML = `
+                <h3 style="color:#10b981">✅ ${(blob.size/1024).toFixed(2)} KB</h3>
+                <a href="${url}" download="${name}" class="btn-primary" style="display:inline-block; text-decoration:none; background:#3b82f6; width:auto; padding:12px 25px;">Download ${name}</a>
+            `;
         }
     </script>
 </body>
-    </html>
-    
+</html>
