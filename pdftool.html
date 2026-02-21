@@ -3,39 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Compressor Tool</title>
+    <title>Image Processing Tool - PDF</title>
     
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Global Reset & Typography (Matching your Image Tool) */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-bottom: 70px; }
-
         header { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
             color: #ffffff; padding: 25px 0; text-align: center; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom: 3px solid #ef4444; /* Red for PDF */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom: 3px solid #ef4444;
         }
         header h1 { font-size: 28px; font-weight: 600; }
-
         main { display: flex; justify-content: center; padding: 40px 20px; }
         .tool-card { background: #ffffff; width: 100%; max-width: 700px; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-
         .instructions { background: #fef2f2; border: 1px solid #fee2e2; border-radius: 6px; margin-bottom: 25px; overflow: hidden; font-size: 14px; }
         .instructions-header { background: #ef4444; color: white; padding: 10px 15px; font-weight: 600; }
         .instructions-content { padding: 15px; }
-
         .upload-btn-wrapper { position: relative; display: block; width: 100%; text-align: center; margin-bottom: 10px; border: 2px dashed #ef4444; border-radius: 8px; padding: 35px; background: #fffafb; cursor: pointer; }
         .upload-btn-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; height: 100%; width: 100%; cursor: pointer; }
         .upload-btn-wrapper span { font-size: 16px; font-weight: 500; color: #ef4444; }
-
         #fileInfo { text-align: center; font-size: 14px; color: #64748b; margin-bottom: 20px; display: none; background: #f1f5f9; padding: 10px; border-radius: 6px; }
-
+        .control-group { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
         .btn-primary { width: 100%; background: #ef4444; color: white; border: none; padding: 16px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: 25px; }
-        .btn-primary:hover { background: #dc2626; }
-
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
         #resultArea { text-align: center; margin-top: 30px; }
         footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 15px 0; font-size: 14px; position: fixed; bottom: 0; width: 100%; }
     </style>
@@ -44,7 +38,7 @@
 
     <header>
         <h1>PDF Processing Tool</h1>
-        <p>Fast, Secure, and Client-Side PDF Compression</p>
+        <p>Compress PDF by Optimizing Internal Images</p>
     </header>
 
     <main>
@@ -53,9 +47,9 @@
                 <div class="instructions-header">Instructions:</div>
                 <div class="instructions-content">
                     <ul>
-                        <li>Upload your PDF file below.</li>
-                        <li>This tool will optimize the document structure to reduce size.</li>
-                        <li>Files are processed locally; your data never leaves your computer.</li>
+                        <li>Upload a PDF to reduce its file size.</li>
+                        <li>This tool re-renders pages with compressed image quality.</li>
+                        <li><strong>Note:</strong> Very large PDFs may take a few seconds to process.</li>
                     </ul>
                 </div>
             </div>
@@ -67,70 +61,98 @@
 
             <div id="fileInfo"></div>
 
-            <button class="btn-primary" id="compressBtn" style="display:none;" onclick="compressPDF()">Compress PDF</button>
+            <div class="control-group" id="settings" style="display:none;">
+                <label style="font-weight:600; font-size:14px;">Compression Level (Quality)</label>
+                <input type="range" id="qualitySlider" min="0.1" max="0.9" step="0.1" value="0.5" style="width:100%; margin-top:10px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:#666;">
+                    <span>Small File (Lower Quality)</span>
+                    <span>Better Quality</span>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="compressBtn" style="display:none;" onclick="startCompression()">Compress PDF</button>
 
             <div id="resultArea"></div>
         </div>
     </main>
 
     <footer>
-        <p>Built for efficiency | <a href="#" style="color:white; text-decoration:none;">Privacy Guaranteed</a></p>
+        <p>Image Processing Tool | <a href="#" style="color:white; text-decoration:none;">PDF Utility</a></p>
     </footer>
 
     <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
         const pdfInput = document.getElementById('pdfInput');
         const fileInfo = document.getElementById('fileInfo');
         const compressBtn = document.getElementById('compressBtn');
+        const settings = document.getElementById('settings');
         const resultArea = document.getElementById('resultArea');
 
         pdfInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                const size = (file.size / 1024).toFixed(2) + ' KB';
-                fileInfo.innerText = `Selected: ${file.name} (${size})`;
+                fileInfo.innerText = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
                 fileInfo.style.display = 'block';
                 compressBtn.style.display = 'block';
+                settings.style.display = 'block';
                 resultArea.innerHTML = '';
             }
         });
 
-        async function compressPDF() {
+        async function startCompression() {
             const file = pdfInput.files[0];
             if (!file) return;
 
-            resultArea.innerHTML = "<p style='color:#ef4444;'>Optimizing PDF... please wait.</p>";
+            compressBtn.disabled = true;
+            const quality = parseFloat(document.getElementById('qualitySlider').value);
+            resultArea.innerHTML = "<p style='color:#ef4444;'>Rendering & Compressing pages... please wait.</p>";
 
             try {
                 const arrayBuffer = await file.arrayBuffer();
-                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-                
-                // PDF-Lib compression works by re-saving with objects compressed
-                // For advanced compression, we can scale down pages (optional)
-                const pages = pdfDoc.getPages();
-                pages.forEach((page) => {
-                    const { width, height } = page.getSize();
-                    // Example: If page is huge (A3+), scale it down slightly to save space
-                    if (width > 1000) page.scale(0.7, 0.7);
-                });
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                const { jsPDF } = window.jspdf;
+                const outPdf = new jsPDF();
 
-                const pdfBytes = await pdfDoc.save({ useObjectStreams: true });
-                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-                
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: 1.5 }); // Balanced scale for quality/size
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                    // Convert page to compressed JPEG
+                    const imgData = canvas.toDataURL('image/jpeg', quality);
+                    
+                    if (i > 1) outPdf.addPage([viewport.width, viewport.height], viewport.width > viewport.height ? 'l' : 'p');
+                    
+                    // Add compressed image to new PDF
+                    outPdf.setPage(i);
+                    outPdf.addImage(imgData, 'JPEG', 0, 0, outPdf.internal.pageSize.getWidth(), outPdf.internal.pageSize.getHeight(), undefined, 'FAST');
+                }
+
+                const outBlob = outPdf.output('blob');
                 const now = new Date();
                 const timestamp = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
                 const fileName = `PDF_${timestamp}.pdf`;
-                const url = URL.createObjectURL(blob);
-                const finalSize = (blob.size / 1024).toFixed(2);
+                const url = URL.createObjectURL(outBlob);
 
                 resultArea.innerHTML = `
-                    <h3 style="color: #10b981; margin-bottom: 15px;">✅ Optimized! (${finalSize} KB)</h3>
-                    <a href="${url}" download="${fileName}" style="display: inline-block; background: #ef4444; color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600;">⬇️ Download ${fileName}</a>
+                    <h3 style="color: #10b981; margin-bottom: 15px;">✅ Success! Final Size: ${(outBlob.size / 1024).toFixed(2)} KB</h3>
+                    <a href="${url}" download="${fileName}" style="display: inline-block; background: #ef4444; color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600;">⬇️ Download Compressed PDF</a>
                 `;
-            } catch (error) {
-                console.error(error);
-                resultArea.innerHTML = "<p style='color:red;'>Error processing PDF. Ensure it's not password protected.</p>";
+            } catch (err) {
+                console.error(err);
+                resultArea.innerHTML = "<p style='color:red;'>Error. Try a different PDF file.</p>";
+            } finally {
+                compressBtn.disabled = false;
             }
         }
     </script>
 </body>
-</html>
+    </html>
+    
