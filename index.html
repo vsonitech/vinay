@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinay Professional Hub</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+body { font-family: 'Inter', sans-serif; }
+.card-hover:hover { transform: translateY(-5px); transition: 0.3s ease; }
+</style>
+</head>
+
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex justify-between items-center h-16">
+
+<div class="flex items-center space-x-3">
+<div class="bg-gradient-to-br from-blue-600 to-indigo-600 text-white p-2 rounded-xl shadow">
+<i class="fa-solid fa-layer-group text-lg"></i>
+</div>
+<span class="font-extrabold text-xl tracking-tight">Vinay Professional Hub</span>
+</div>
+
+<div class="hidden md:block text-sm text-gray-500 font-medium">
+Internal Resource Dashboard
+</div>
+
+</div>
+</div>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-14">
+<div class="max-w-7xl mx-auto px-6">
+<h1 class="text-4xl font-extrabold mb-3">Welcome back, Vinay 👋</h1>
+<p class="text-blue-100 text-lg">Your centralized workspace for tools, repositories & resources.</p>
+
+<div class="mt-6 max-w-md">
+<input type="text" placeholder="Search tools..."
+class="w-full px-4 py-3 rounded-xl text-gray-800 focus:outline-none shadow-md">
+</div>
+</div>
+</section>
+
+<!-- MAIN DASHBOARD -->
+<main class="max-w-7xl mx-auto px-6 py-10">
+
+<!-- QUICK STATS -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+
+<div class="bg-white rounded-2xl p-6 shadow card-hover">
+<p class="text-gray-500 text-sm">Active Tools</p>
+<h2 class="text-3xl font-bold text-blue-600 mt-2">4</h2>
+</div>
+
+<div class="bg-white rounded-2xl p-6 shadow card-hover">
+<p class="text-gray-500 text-sm">Repositories</p>
+<h2 class="text-3xl font-bold text-indigo-600 mt-2">12</h2>
+</div>
+
+<div class="bg-white rounded-2xl p-6 shadow card-hover">
+<p class="text-gray-500 text-sm">Cloud Access</p>
+<h2 class="text-3xl font-bold text-green-600 mt-2">Connected</h2>
+</div>
+
+</div>
+
+<!-- TOOL CARDS -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+<!-- TOOLS -->
+<div class="bg-white rounded-2xl shadow p-6 card-hover">
+<div class="flex items-center mb-5">
+<i class="fa-solid fa-wrench text-blue-600 text-xl mr-3"></i>
+<h3 class="text-lg font-bold">Internal Tools</h3>
+</div>
+
+<div class="space-y-3">
+
+<a href="https://vsonitech.github.io/taxnew/" target="_blank"
+class="block p-3 rounded-xl border hover:bg-blue-50 transition">
+<i class="fa-solid fa-calculator mr-2 text-blue-600"></i> Tax Calculator
+</a>
+
+<a href="#" class="block p-3 rounded-xl border hover:bg-blue-50 transition">
+<i class="fa-solid fa-money-check-dollar mr-2 text-blue-600"></i> Salary Generator
+</a>
+
+<a href="#" class="block p-3 rounded-xl border hover:bg-blue-50 transition">
+<i class="fa-solid fa-users mr-2 text-blue-600"></i> Employee Data Tool
+</a>
+
+<a href="#" class="block p-3 rounded-xl border hover:bg-blue-50 transition">
+<i class="fa-solid fa-file-pdf mr-2 text-blue-600"></i> PDF Report Builder
+</a>
+
+</div>
+</div>
+
+<!-- GOOGLE DRIVE -->
+<div class="bg-white rounded-2xl shadow p-6 card-hover">
+<div class="flex items-center mb-5">
+<i class="fa-brands fa-google-drive text-green-600 text-xl mr-3"></i>
+<h3 class="text-lg font-bold">Cloud Storage</h3>
+</div>
+
+<p class="text-sm text-gray-500 mb-6">
+Access internal documentation and shared folders.
+</p>
+
+<a href="https://drive.google.com/drive/folders/11Y36oGq5s49wAe_zT3j08BHoS1I1e1Ho?usp=sharing"
+target="_blank"
+class="block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition">
+Open Google Drive
+</a>
+</div>
+
+<!-- GITHUB -->
+<div class="bg-white rounded-2xl shadow p-6 card-hover">
+<div class="flex items-center mb-5">
+<i class="fa-brands fa-github text-gray-800 text-xl mr-3"></i>
+<h3 class="text-lg font-bold">Repositories</h3>
+</div>
+
+<p class="text-sm text-gray-500 mb-6">
+Manage source code and deployments.
+</p>
+
+<a href="https://github.com" target="_blank"
+class="block text-center bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-xl font-semibold transition">
+View GitHub Projects
+</a>
+</div>
+
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-white border-t mt-12">
+<div class="max-w-7xl mx-auto px-6 py-6 text-center text-sm text-gray-500">
+© 2026 Vinay Professional Hub • Designed for Professional Internal Use  
+</div>
+</footer>
+
+</body>
+</html>
