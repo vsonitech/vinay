@@ -182,13 +182,11 @@ Designed by with ❤️ by Vinay Soni
 <script>
 
 const fileInput = document.getElementById("fileInput");
-const fileList = document.getElementById("fileList");
 const progressBox = document.getElementById("progressBox");
 const progressBar = document.getElementById("progressBar");
 const successMsg = document.getElementById("successMsg");
 const downloadArea = document.getElementById("downloadArea");
 const preview = document.getElementById("preview");
-
 fileInput.addEventListener("change", validateFiles);
 
 function switchType(){
@@ -259,62 +257,6 @@ async function startCompression(){
   successMsg.style.display="block";
   successMsg.style.animation="fadeIn 0.5s ease-in-out";
   successMsg.innerHTML="🎉 Image Compression Completed Successfully!";
-}
-
-async function compressPDF(file){
-  const { PDFDocument } = PDFLib;
-
-  const arrayBuffer = await file.arrayBuffer();
-  const pdfDoc = await PDFDocument.load(arrayBuffer);
-
-  // Remove metadata (reduces size slightly)
-  pdfDoc.setTitle("");
-  pdfDoc.setAuthor("");
-  pdfDoc.setSubject("");
-  pdfDoc.setProducer("");
-
-  const compressedBytes = await pdfDoc.save({
-    useObjectStreams: true,
-    compress: true,
-    addDefaultPage: false
-  });
-
-  return new Blob([compressedBytes], { type: "application/pdf" });
-}
-
-function showPreview(blob){
-  const img=document.createElement("img");
-  img.src=URL.createObjectURL(blob);
-  preview.appendChild(img);
-}
-
-function createDownloadButton(blob, originalName, originalSizeKB, targetKB){
-
-  const compressedSizeKB=(blob.size/1024).toFixed(1);
-  const reduction=((1-(blob.size/(originalSizeKB*1024)))*100).toFixed(1);
-
-  const newName=originalName.replace(/\.[^/.]+$/,"")+"_"+targetKB+"KB."+originalName.split('.').pop();
-
-  const wrapper=document.createElement("div");
-
-  wrapper.innerHTML=`
-    <b>${newName}</b><br>
-    Original: ${originalSizeKB} KB <br>
-    Compressed: ${compressedSizeKB} KB <br>
-    Reduction: <span style="color:green;font-weight:bold">${reduction}%</span>
-  `;
-
-  const btn=document.createElement("button");
-  btn.textContent="⬇ Download";
-  btn.onclick=function(){
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download=newName;
-    a.click();
-  };
-
-  wrapper.appendChild(btn);
-  downloadArea.appendChild(wrapper);
 }
 
 </script>
