@@ -17,7 +17,7 @@
 }
 
 body{
-  background:linear-gradient(135deg,#e0f2fe,#f1f5f9);
+  background:linear-gradient(135deg,#e0f2fe,#f8fafc);
   min-height:100vh;
   display:flex;
   flex-direction:column;
@@ -26,7 +26,7 @@ body{
 header{
   background:#0f172a;
   color:#fff;
-  padding:18px;
+  padding:16px;
   text-align:center;
   font-weight:600;
   font-size:18px;
@@ -36,55 +36,61 @@ header{
   flex:1;
   display:flex;
   justify-content:center;
-  align-items:center;
   padding:20px;
 }
 
 .card{
   background:#fff;
   width:100%;
-  max-width:520px;
+  max-width:800px;
   padding:25px;
   border-radius:18px;
   box-shadow:0 15px 40px rgba(0,0,0,0.08);
 }
 
-.card h2{
-  margin-bottom:15px;
-  color:#0f172a;
+.upload-btn{
+  display:inline-block;
+  padding:12px 18px;
+  background:#2563eb;
+  color:#fff;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.3s;
 }
 
-input[type="file"],
+.upload-btn:hover{
+  background:#1d4ed8;
+}
+
+input[type="file"]{
+  display:none;
+}
+
 input[type="number"]{
   width:100%;
-  padding:12px;
-  margin-bottom:12px;
+  padding:10px;
+  margin-top:12px;
   border-radius:10px;
   border:1px solid #e2e8f0;
-  font-size:14px;
 }
 
 button{
   width:100%;
   padding:13px;
+  margin-top:15px;
   border:none;
   border-radius:12px;
-  background:#2563eb;
+  background:#16a34a;
   color:#fff;
   font-weight:600;
   cursor:pointer;
-  transition:0.3s;
 }
 
-button:hover{
-  background:#1d4ed8;
-}
-
-.progress-container{
-  width:100%;
+.progress{
+  height:8px;
   background:#e2e8f0;
   border-radius:20px;
-  height:10px;
   margin-top:15px;
   overflow:hidden;
   display:none;
@@ -93,31 +99,48 @@ button:hover{
 .progress-bar{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,#2563eb,#38bdf8);
-  transition:width 0.3s ease;
+  background:linear-gradient(90deg,#16a34a,#22c55e);
+  transition:0.3s;
 }
 
-.success{
-  margin-top:18px;
-  padding:15px;
-  background:#ecfdf5;
-  border:1px solid #10b981;
+.preview-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:12px;
+  margin-top:20px;
+}
+
+.preview-item{
+  background:#f1f5f9;
+  padding:10px;
   border-radius:12px;
-  font-size:14px;
-  display:none;
-  animation:fadeIn 0.5s ease;
+  text-align:center;
+  font-size:12px;
 }
 
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(5px);}
-  to{opacity:1; transform:translateY(0);}
+.preview-item img{
+  max-width:100%;
+  border-radius:8px;
+  margin-bottom:8px;
+}
+
+.download-btn{
+  margin-top:8px;
+  padding:6px 10px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:12px;
 }
 
 footer{
   text-align:center;
-  padding:15px;
+  padding:10px;
   font-size:13px;
   color:#64748b;
+  background:#fff;
 }
 footer span{
   font-weight:600;
@@ -128,85 +151,98 @@ footer span{
 
 <body>
 
-<header>
-  Smart Image Compressor
-</header>
+<header>Image Resize Utility</header>
 
 <div class="container">
-  <div class="card">
-    <h2>Upload Image:</h2>
+<div class="card">
 
-    <input type="file" id="imageInput" accept="image/*">
-    <input type="number" id="targetSize" placeholder="Enter max size in KB (e.g. 50)" value="50">
+<label class="upload-btn">
+  Choose Images
+  <input type="file" id="imageInput" accept="image/*" multiple>
+</label>
 
-    <button onclick="compressImage()">Compress Image</button>
+<input type="number" id="targetSize" placeholder="Enter max size in KB (e.g. 50)" value="50">
 
-    <div class="progress-container" id="progressContainer">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
+<button onclick="compressImages()">Compress Selected Images</button>
 
-    <div class="success" id="successBox"></div>
+<div class="progress" id="progressContainer">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
 
-  </div>
+<div class="preview-grid" id="previewGrid"></div>
+
+</div>
 </div>
 
 <footer>
-  Designed & Automated by <span>Vinay Soni</span>
+  Designed by <span>Vinay Soni</span>
 </footer>
 
 <script>
-async function compressImage() {
+async function compressImages(){
 
-  const file = document.getElementById('imageInput').files[0];
+  const files = document.getElementById('imageInput').files;
   const targetKB = parseInt(document.getElementById('targetSize').value);
   const progressBar = document.getElementById("progressBar");
   const progressContainer = document.getElementById("progressContainer");
-  const successBox = document.getElementById("successBox");
+  const previewGrid = document.getElementById("previewGrid");
 
-  if (!file) return alert("Please select an image.");
-  if (!targetKB || targetKB <= 0) return alert("Enter valid target size.");
+  if(files.length === 0) return alert("Please select images.");
+  if(!targetKB || targetKB <= 0) return alert("Enter valid target size.");
 
-  successBox.style.display = "none";
+  previewGrid.innerHTML = "";
   progressContainer.style.display = "block";
-  progressBar.style.width = "10%";
+  progressBar.style.width = "0%";
 
-  let quality = 0.9;
-  let maxWidth = 1200;
-  let compressedFile = file;
-  let progress = 10;
+  let progressStep = 100 / files.length;
 
-  while (compressedFile.size > targetKB * 1024 && quality > 0.05) {
+  for(let i=0; i<files.length; i++){
 
-    const options = {
-      maxWidthOrHeight: maxWidth,
-      initialQuality: quality,
-      useWebWorker: true
+    let file = files[i];
+    let quality = 0.9;
+    let maxWidth = 1200;
+    let compressedFile = file;
+
+    while(compressedFile.size > targetKB * 1024 && quality > 0.05){
+      const options = {
+        maxWidthOrHeight:maxWidth,
+        initialQuality:quality,
+        useWebWorker:true
+      };
+      compressedFile = await imageCompression(file, options);
+      quality -= 0.05;
+      maxWidth -= 50;
+    }
+
+    const previewItem = document.createElement("div");
+    previewItem.className = "preview-item";
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(compressedFile);
+
+    const info = document.createElement("div");
+    info.innerHTML = `
+      ${(compressedFile.size/1024).toFixed(1)} KB
+    `;
+
+    const downloadBtn = document.createElement("button");
+    downloadBtn.className = "download-btn";
+    downloadBtn.innerText = "Download";
+    downloadBtn.onclick = function(){
+      const a = document.createElement("a");
+      a.href = img.src;
+      a.download = "compressed_"+file.name;
+      a.click();
     };
 
-    compressedFile = await imageCompression(file, options);
+    previewItem.appendChild(img);
+    previewItem.appendChild(info);
+    previewItem.appendChild(downloadBtn);
 
-    quality -= 0.05;
-    maxWidth -= 50;
+    previewGrid.appendChild(previewItem);
 
-    progress += 10;
-    progressBar.style.width = progress + "%";
+    progressBar.style.width = ((i+1)*progressStep)+"%";
   }
-
-  progressBar.style.width = "100%";
-
-  successBox.innerHTML = `
-    ✅ Compression Successful! <br><br>
-    Original: ${(file.size/1024).toFixed(2)} KB <br>
-    Compressed: ${(compressedFile.size/1024).toFixed(2)} KB
-  `;
-
-  successBox.style.display = "block";
-
-  const url = URL.createObjectURL(compressedFile);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "compressed.jpg";
-  a.click();
 }
 </script>
 
