@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Image Compressor</title>
+<title>Under 50KB Image Compressor</title>
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 
 <style>
@@ -36,7 +36,7 @@ button{
 <body>
 
 <div class="container">
-<h2>Image Compressor</h2>
+<h2>Compress Image Below 50KB</h2>
 <input type="file" id="imageInput" accept="image/*">
 <button onclick="compressImage()">Compress</button>
 <p id="result"></p>
@@ -47,17 +47,22 @@ async function compressImage() {
   const file = document.getElementById('imageInput').files[0];
   if (!file) return alert("Select image");
 
-  const options = {
-    maxSizeMB: 0.5,
-    maxWidthOrHeight: 1200,
-    useWebWorker: true
-  };
+  let quality = 0.9;
+  let compressedFile = file;
 
-  const compressedFile = await imageCompression(file, options);
+  while (compressedFile.size > 50000 && quality > 0.1) {
+    const options = {
+      maxWidthOrHeight: 800,
+      initialQuality: quality,
+      useWebWorker: true
+    };
+
+    compressedFile = await imageCompression(file, options);
+    quality -= 0.1;
+  }
 
   document.getElementById('result').innerHTML =
-    "Original: " + (file.size/1024/1024).toFixed(2) + " MB<br>" +
-    "Compressed: " + (compressedFile.size/1024/1024).toFixed(2) + " MB";
+    "Final Size: " + (compressedFile.size/1024).toFixed(2) + " KB";
 
   const url = URL.createObjectURL(compressedFile);
   const a = document.createElement("a");
