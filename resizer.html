@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Compressor</title>
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+
+<style>
+body{
+  font-family:Arial;
+  background:#f4f6f9;
+  padding:20px;
+}
+.container{
+  max-width:500px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+input,button{
+  width:100%;
+  margin-top:12px;
+  padding:10px;
+}
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Image Compressor</h2>
+<input type="file" id="imageInput" accept="image/*">
+<button onclick="compressImage()">Compress</button>
+<p id="result"></p>
+</div>
+
+<script>
+async function compressImage() {
+  const file = document.getElementById('imageInput').files[0];
+  if (!file) return alert("Select image");
+
+  const options = {
+    maxSizeMB: 0.5,
+    maxWidthOrHeight: 1200,
+    useWebWorker: true
+  };
+
+  const compressedFile = await imageCompression(file, options);
+
+  document.getElementById('result').innerHTML =
+    "Original: " + (file.size/1024/1024).toFixed(2) + " MB<br>" +
+    "Compressed: " + (compressedFile.size/1024/1024).toFixed(2) + " MB";
+
+  const url = URL.createObjectURL(compressedFile);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "compressed.jpg";
+  a.click();
+}
+</script>
+
+</body>
+</html>
