@@ -9,52 +9,65 @@
 
 <style>
 body{
-  font-family:Arial, sans-serif;
+  font-family:Calibri,Arial;
   background:#f4f6f9;
   margin:0;
 }
+
 .container{
   max-width:520px;
   margin:auto;
   background:#fff;
   padding:20px;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
+  box-shadow:0 0 10px rgba(0,0,0,.08);
+  border-radius:10px;
 }
-h2{text-align:center;margin-top:5px}
-.home-btn{
-  text-decoration:none;
-  color:#2563eb;
-  font-size:14px;
+
+h2{
+  text-align:center;
+  margin-top:5px;
 }
+
+.type-select{
+  text-align:center;
+  margin-bottom:10px;
+}
+
 .upload-box{
   border:2px dashed #cbd5e1;
-  padding:20px;
+  padding:18px;
   text-align:center;
   border-radius:8px;
   cursor:pointer;
   background:#f8fafc;
+  transition:.3s;
 }
-.upload-box:hover{background:#eef2ff}
-input[type=file]{display:none}
+.upload-box:hover{
+  background:#eef2ff;
+}
+input[type=file]{display:none;}
+
 input[type=number]{
   width:100%;
-  padding:10px;
+  padding:8px;
   margin-top:8px;
 }
+
 button{
   background:#2563eb;
   color:#fff;
   border:none;
-  padding:12px;
+  padding:10px;
   width:100%;
   margin-top:15px;
   border-radius:6px;
-  font-size:16px;
+  font-size:15px;
   cursor:pointer;
 }
-button:hover{background:#1e40af}
+button:hover{
+  background:#1e40af;
+}
+
 .progress{
   height:8px;
   background:#e5e7eb;
@@ -67,16 +80,20 @@ button:hover{background:#1e40af}
   height:100%;
   width:0%;
   background:#22c55e;
+  transition:.4s;
 }
+
+.file-list{
+  margin-top:10px;
+  font-size:14px;
+}
+
 .preview img{
   max-width:100%;
   margin-top:10px;
   border-radius:6px;
 }
-.file-list{
-  margin-top:10px;
-  font-size:14px;
-}
+
 .success{
   background:#ecfdf5;
   color:#065f46;
@@ -85,19 +102,28 @@ button:hover{background:#1e40af}
   margin-top:15px;
   display:none;
 }
-.download a{
-  display:block;
-  margin-top:10px;
-  text-decoration:none;
-  color:#2563eb;
-  font-weight:bold;
+
+.download-area div{
+  margin-top:12px;
+  padding:10px;
+  background:#f8fafc;
+  border-radius:8px;
+  font-size:14px;
 }
+
 footer{
-  margin-top:auto;
+  margin-top:20px;
+  padding:15px;
   text-align:center;
-  font-size:13px;
-  color:#6b7280;
-  padding-top:20px;
+  font-size:14px;
+  background:linear-gradient(to right,#2563eb,#1e3a8a);
+  color:white;
+  border-radius:10px;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(5px);}
+  to{opacity:1;transform:translateY(0);}
 }
 </style>
 </head>
@@ -105,17 +131,25 @@ footer{
 <body>
 <div class="container">
 
-<a class="home-btn" href="#">← Home</a>
-
 <h2>Smart Image & PDF Compressor</h2>
 
+<div class="type-select">
+  <label>
+    <input type="radio" name="fileType" value="image" checked onchange="switchType()"> Image
+  </label>
+  &nbsp;&nbsp;
+  <label>
+    <input type="radio" name="fileType" value="pdf" onchange="switchType()"> PDF
+  </label>
+</div>
+
 <p style="font-size:14px;text-align:center">
-Select up to <b>3 files</b> (Image or PDF)
+Select up to <b>3 files</b>
 </p>
 
 <label class="upload-box">
-Choose Files
-<input type="file" id="fileInput" multiple accept="image/*,application/pdf">
+  Choose Files
+  <input type="file" id="fileInput" multiple accept="image/*">
 </label>
 
 <div class="file-list" id="fileList"></div>
@@ -131,25 +165,39 @@ Choose Files
 
 <div class="preview" id="preview"></div>
 <div class="success" id="successMsg"></div>
-<div class="download" id="downloadLinks"></div>
+<div class="download-area" id="downloadArea"></div>
 
 <footer>
-© 2026 • Smart Compressor • Built with ❤️ by <b>Vinay Soni</b>
+Smart Compressor Tool • Free Online Utility <br>
+Built with ❤️ for Productivity
 </footer>
 
 </div>
 
 <script>
+
 const fileInput = document.getElementById("fileInput");
 const fileList = document.getElementById("fileList");
+const progressBox = document.getElementById("progressBox");
+const progressBar = document.getElementById("progressBar");
+const successMsg = document.getElementById("successMsg");
+const downloadArea = document.getElementById("downloadArea");
+const preview = document.getElementById("preview");
 
 fileInput.addEventListener("change", validateFiles);
+
+function switchType(){
+  const type = document.querySelector('input[name="fileType"]:checked').value;
+  fileInput.accept = (type==="image") ? "image/*" : "application/pdf";
+  fileInput.value="";
+  fileList.innerHTML="";
+}
 
 function validateFiles(){
   const files = fileInput.files;
 
   if(files.length > 3){
-    alert("You can select maximum 3 files only.");
+    alert("Maximum 3 files allowed.");
     fileInput.value="";
     fileList.innerHTML="";
     return;
@@ -157,60 +205,77 @@ function validateFiles(){
 
   let list="";
   for(let i=0;i<files.length;i++){
-    list += (i+1)+". "+files[i].name+" ("+(files[i].size/1024).toFixed(1)+" KB)<br>";
+    let icon = files[i].type.includes("image") ? "🖼" : "📄";
+    let sizeKB = (files[i].size/1024).toFixed(1);
+    list += `${i+1}. ${icon} ${files[i].name} (${sizeKB} KB)<br>`;
   }
-  fileList.innerHTML = list;
+  fileList.innerHTML=list;
 }
 
 async function startCompression(){
   const files = fileInput.files;
-  if(!files.length) return;
-
-  document.getElementById("progressBox").style.display="block";
-  document.getElementById("successMsg").style.display="none";
-  document.getElementById("downloadLinks").innerHTML="";
-  document.getElementById("preview").innerHTML="";
-
-  const targetKB = parseInt(document.getElementById("targetKB").value);
-  const progressBar = document.getElementById("progressBar");
-
-  for(let i=0;i<files.length;i++){
-    progressBar.style.width = ((i+1)/files.length*100)+"%";
-
-    let compressed;
-    if(files[i].type.includes("image")){
-      compressed = await compressImage(files[i], targetKB);
-      showPreview(compressed);
-    }else{
-      compressed = await compressPDF(files[i]);
-    }
-
-    createDownload(compressed, files[i].name);
+  if(!files.length){
+    alert("Please select file(s)");
+    return;
   }
 
-  document.getElementById("successMsg").style.display="block";
-  document.getElementById("successMsg").innerHTML="✅ Files compressed successfully!";
+  const selectedType = document.querySelector('input[name="fileType"]:checked').value;
+  const targetKB = parseInt(document.getElementById("targetKB").value);
+
+  progressBox.style.display="block";
+  progressBar.style.width="0%";
+  successMsg.style.display="none";
+  downloadArea.innerHTML="";
+  preview.innerHTML="";
+
+  for(let i=0;i<files.length;i++){
+
+    let compressedBlob;
+    const originalSizeKB = (files[i].size/1024).toFixed(1);
+
+    if(selectedType==="image"){
+      if(!files[i].type.includes("image")){
+        alert("Only image files allowed.");
+        return;
+      }
+      compressedBlob = await compressImage(files[i],targetKB);
+      showPreview(compressedBlob);
+    } else {
+      if(!files[i].type.includes("pdf")){
+        alert("Only PDF files allowed.");
+        return;
+      }
+      compressedBlob = await compressPDF(files[i]);
+    }
+
+    createDownloadButton(compressedBlob, files[i].name, originalSizeKB, targetKB);
+
+    progressBar.style.width=((i+1)/files.length*100)+"%";
+  }
+
+  successMsg.style.display="block";
+  successMsg.style.animation="fadeIn 0.5s ease-in-out";
+  successMsg.innerHTML="🎉 Compression Completed Successfully!";
 }
 
-function compressImage(file, targetKB){
+function compressImage(file,targetKB){
   return new Promise(resolve=>{
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
-    img.onload = ()=>{
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
+    const img=new Image();
+    img.src=URL.createObjectURL(file);
+    img.onload=function(){
+      const canvas=document.createElement("canvas");
+      canvas.width=img.width;
+      canvas.height=img.height;
       canvas.getContext("2d").drawImage(img,0,0);
 
-      let quality = 0.7;
-      let blob;
+      let quality=0.7;
 
       function reduce(){
-        canvas.toBlob(b=>{
-          if(b.size/1024 <= targetKB || quality <= 0.1){
-            resolve(b);
-          }else{
-            quality -= 0.1;
+        canvas.toBlob(function(blob){
+          if(blob.size/1024<=targetKB || quality<=0.1){
+            resolve(blob);
+          } else {
+            quality-=0.1;
             reduce();
           }
         },"image/jpeg",quality);
@@ -222,8 +287,8 @@ function compressImage(file, targetKB){
 
 async function compressPDF(file){
   const { PDFDocument } = PDFLib;
-  const buffer = await file.arrayBuffer();
-  const pdfDoc = await PDFDocument.load(buffer);
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
   const pdfBytes = await pdfDoc.save({
     useObjectStreams:true,
     compress:true
@@ -232,18 +297,40 @@ async function compressPDF(file){
 }
 
 function showPreview(blob){
-  const img = document.createElement("img");
-  img.src = URL.createObjectURL(blob);
-  document.getElementById("preview").appendChild(img);
+  const img=document.createElement("img");
+  img.src=URL.createObjectURL(blob);
+  preview.appendChild(img);
 }
 
-function createDownload(blob, name){
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "compressed_"+name;
-  a.textContent = "⬇ Download "+a.download;
-  document.getElementById("downloadLinks").appendChild(a);
+function createDownloadButton(blob, originalName, originalSizeKB, targetKB){
+
+  const compressedSizeKB=(blob.size/1024).toFixed(1);
+  const reduction=((1-(blob.size/(originalSizeKB*1024)))*100).toFixed(1);
+
+  const newName=originalName.replace(/\.[^/.]+$/,"")+"_"+targetKB+"KB."+originalName.split('.').pop();
+
+  const wrapper=document.createElement("div");
+
+  wrapper.innerHTML=`
+    <b>${newName}</b><br>
+    Original: ${originalSizeKB} KB <br>
+    Compressed: ${compressedSizeKB} KB <br>
+    Reduction: <span style="color:green;font-weight:bold">${reduction}%</span>
+  `;
+
+  const btn=document.createElement("button");
+  btn.textContent="⬇ Download";
+  btn.onclick=function(){
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download=newName;
+    a.click();
+  };
+
+  wrapper.appendChild(btn);
+  downloadArea.appendChild(wrapper);
 }
+
 </script>
 </body>
 </html>
