@@ -1,68 +1,206 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Under 50KB Image Compressor</title>
+<title>Smart Image Compressor</title>
+
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
 body{
-  font-family:Arial;
-  background:#f4f6f9;
-  padding:20px;
+  background:linear-gradient(135deg,#e0f2fe,#f1f5f9);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
 }
+
+header{
+  background:#0f172a;
+  color:#fff;
+  padding:18px;
+  text-align:center;
+  font-weight:600;
+  font-size:18px;
+}
+
 .container{
-  max-width:500px;
-  margin:auto;
-  background:#fff;
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   padding:20px;
-  border-radius:12px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.05);
 }
-input,button{
+
+.card{
+  background:#fff;
   width:100%;
-  margin-top:12px;
-  padding:10px;
+  max-width:520px;
+  padding:25px;
+  border-radius:18px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.08);
 }
+
+.card h2{
+  margin-bottom:15px;
+  color:#0f172a;
+}
+
+input[type="file"],
+input[type="number"]{
+  width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  border-radius:10px;
+  border:1px solid #e2e8f0;
+  font-size:14px;
+}
+
 button{
-  background:#2563eb;
-  color:white;
+  width:100%;
+  padding:13px;
   border:none;
-  border-radius:8px;
+  border-radius:12px;
+  background:#2563eb;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#1d4ed8;
+}
+
+.progress-container{
+  width:100%;
+  background:#e2e8f0;
+  border-radius:20px;
+  height:10px;
+  margin-top:15px;
+  overflow:hidden;
+  display:none;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#2563eb,#38bdf8);
+  transition:width 0.3s ease;
+}
+
+.success{
+  margin-top:18px;
+  padding:15px;
+  background:#ecfdf5;
+  border:1px solid #10b981;
+  border-radius:12px;
+  font-size:14px;
+  display:none;
+  animation:fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(5px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+footer{
+  text-align:center;
+  padding:15px;
+  font-size:13px;
+  color:#64748b;
+}
+footer span{
+  font-weight:600;
+  color:#0f172a;
 }
 </style>
 </head>
 
 <body>
 
+<header>
+  Smart Image Compressor
+</header>
+
 <div class="container">
-<h2>Compress Image Below 50KB</h2>
-<input type="file" id="imageInput" accept="image/*">
-<button onclick="compressImage()">Compress</button>
-<p id="result"></p>
+  <div class="card">
+    <h2>Compress Image to Desired Size</h2>
+
+    <input type="file" id="imageInput" accept="image/*">
+    <input type="number" id="targetSize" placeholder="Enter max size in KB (e.g. 50)" value="50">
+
+    <button onclick="compressImage()">Compress Image</button>
+
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="success" id="successBox"></div>
+
+  </div>
 </div>
+
+<footer>
+  Built with precision by <span>Vinay S</span>
+</footer>
 
 <script>
 async function compressImage() {
+
   const file = document.getElementById('imageInput').files[0];
-  if (!file) return alert("Select image");
+  const targetKB = parseInt(document.getElementById('targetSize').value);
+  const progressBar = document.getElementById("progressBar");
+  const progressContainer = document.getElementById("progressContainer");
+  const successBox = document.getElementById("successBox");
+
+  if (!file) return alert("Please select an image.");
+  if (!targetKB || targetKB <= 0) return alert("Enter valid target size.");
+
+  successBox.style.display = "none";
+  progressContainer.style.display = "block";
+  progressBar.style.width = "10%";
 
   let quality = 0.9;
+  let maxWidth = 1200;
   let compressedFile = file;
+  let progress = 10;
 
-  while (compressedFile.size > 50000 && quality > 0.1) {
+  while (compressedFile.size > targetKB * 1024 && quality > 0.05) {
+
     const options = {
-      maxWidthOrHeight: 800,
+      maxWidthOrHeight: maxWidth,
       initialQuality: quality,
       useWebWorker: true
     };
 
     compressedFile = await imageCompression(file, options);
-    quality -= 0.1;
+
+    quality -= 0.05;
+    maxWidth -= 50;
+
+    progress += 10;
+    progressBar.style.width = progress + "%";
   }
 
-  document.getElementById('result').innerHTML =
-    "Final Size: " + (compressedFile.size/1024).toFixed(2) + " KB";
+  progressBar.style.width = "100%";
+
+  successBox.innerHTML = `
+    ✅ Compression Successful! <br><br>
+    Original: ${(file.size/1024).toFixed(2)} KB <br>
+    Compressed: ${(compressedFile.size/1024).toFixed(2)} KB
+  `;
+
+  successBox.style.display = "block";
 
   const url = URL.createObjectURL(compressedFile);
   const a = document.createElement("a");
