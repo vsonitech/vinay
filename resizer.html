@@ -18,9 +18,7 @@
 
 body{
   background:linear-gradient(135deg,#e0f2fe,#f8fafc);
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
+  padding-bottom:60px; /* space for fixed footer */
 }
 
 header{
@@ -33,16 +31,15 @@ header{
 }
 
 .container{
-  flex:1;
+  padding:20px;
   display:flex;
   justify-content:center;
-  padding:20px;
 }
 
 .card{
   background:#fff;
   width:100%;
-  max-width:800px;
+  max-width:850px;
   padding:25px;
   border-radius:18px;
   box-shadow:0 15px 40px rgba(0,0,0,0.08);
@@ -87,6 +84,14 @@ button{
   cursor:pointer;
 }
 
+.file-info{
+  margin-top:15px;
+  font-size:14px;
+  background:#f1f5f9;
+  padding:12px;
+  border-radius:10px;
+}
+
 .progress{
   height:8px;
   background:#e2e8f0;
@@ -105,7 +110,7 @@ button{
 
 .preview-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
   gap:12px;
   margin-top:20px;
 }
@@ -136,12 +141,17 @@ button{
 }
 
 footer{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#ffffff;
   text-align:center;
-  padding:10px;
+  padding:12px;
   font-size:13px;
+  border-top:1px solid #e2e8f0;
   color:#64748b;
-  background:#fff;
 }
+
 footer span{
   font-weight:600;
   color:#0f172a;
@@ -151,15 +161,17 @@ footer span{
 
 <body>
 
-<header>Image Resize Utility</header>
+<header>Smart Image Compressor</header>
 
 <div class="container">
 <div class="card">
 
 <label class="upload-btn">
   Choose Images
-  <input type="file" id="imageInput" accept="image/*" multiple>
+  <input type="file" id="imageInput" accept="image/*" multiple onchange="showFileInfo()">
 </label>
+
+<div class="file-info" id="fileInfo" style="display:none;"></div>
 
 <input type="number" id="targetSize" placeholder="Enter max size in KB (e.g. 50)" value="50">
 
@@ -175,10 +187,32 @@ footer span{
 </div>
 
 <footer>
-  Designed by <span>Vinay Soni</span>
+  Professionally crafted by <span>Vinay S</span>
 </footer>
 
 <script>
+
+function showFileInfo(){
+  const files = document.getElementById('imageInput').files;
+  const fileInfo = document.getElementById('fileInfo');
+
+  if(files.length === 0){
+    fileInfo.style.display="none";
+    return;
+  }
+
+  let names = "";
+  for(let i=0;i<files.length;i++){
+    names += (i+1) + ". " + files[i].name + "<br>";
+  }
+
+  fileInfo.innerHTML = `
+    <strong>${files.length} file(s) selected:</strong><br><br>
+    ${names}
+  `;
+  fileInfo.style.display="block";
+}
+
 async function compressImages(){
 
   const files = document.getElementById('imageInput').files;
@@ -222,6 +256,7 @@ async function compressImages(){
 
     const info = document.createElement("div");
     info.innerHTML = `
+      <strong>${file.name}</strong><br>
       ${(compressedFile.size/1024).toFixed(1)} KB
     `;
 
@@ -247,4 +282,4 @@ async function compressImages(){
 </script>
 
 </body>
-</html>
+  </html>
