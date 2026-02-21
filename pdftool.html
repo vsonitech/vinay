@@ -217,28 +217,61 @@
 
         // PDF Logic
         async function processPDF() {
-            const file = document.getElementById('fileInput').files[0];
-            const q = parseFloat(document.getElementById('qualitySlider').value);
-            document.getElementById('resultArea').innerHTML = "Processing PDF...";
-            
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-            const { jsPDF } = window.jspdf;
-            const outPdf = new jsPDF();
+    const file = document.getElementById('fileInput').files[0];
+    const q = parseFloat(document.getElementById('qualitySlider').value);
+    const resultArea = document.getElementById('resultArea');
+    resultArea.innerHTML = "<p style='color:#ef4444; font-weight:600;'>Processing PDF... (0%)</p>";
+    
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+        const { jsPDF } = window.jspdf;
+        
+        // 1. Create the PDF without a default size
+        const outPdf = new jsPDF({
+            orientation: 'p',
+            unit: 'px',
+            compress: true
+        });
 
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const vp = page.getViewport({ scale: 1.5 });
-                const canvas = document.createElement('canvas');
-                canvas.height = vp.height; canvas.width = vp.width;
-                await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-                const data = canvas.toDataURL('image/jpeg', q);
-                if (i > 1) outPdf.addPage([vp.width, vp.height], vp.width > vp.height ? 'l' : 'p');
-                outPdf.setPage(i);
-                outPdf.addImage(data, 'JPEG', 0, 0, outPdf.internal.pageSize.getWidth(), outPdf.internal.pageSize.getHeight());
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const vp = page.getViewport({ scale: 2.0 }); // Higher scale prevents blurriness
+            
+            const canvas = document.createElement('canvas');
+            canvas.height = vp.height; 
+            canvas.width = vp.width;
+            
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+            
+            const data = canvas.toDataURL('image/jpeg', q);
+
+            // 2. Dynamically set the page size for the current page
+            const pdfWidth = outPdf.internal.pageSize.getWidth();
+            const pdfHeight = outPdf.internal.pageSize.getHeight();
+
+            // If it's not the first page, we need to add a new page with custom dimensions
+            if (i > 1) {
+                outPdf.addPage([vp.width, vp.height], vp.width > vp.height ? 'l' : 'p');
+            } else {
+                // Resize the very first page of the PDF to match the first image
+                outPdf.deletePage(1);
+                outPdf.addPage([vp.width, vp.height], vp.width > vp.height ? 'l' : 'p');
             }
-            finalize(outPdf.output('blob'), 'pdf');
+
+            // 3. Draw the image to fill the entire custom page exactly
+            outPdf.addImage(data, 'JPEG', 0, 0, vp.width, vp.height, undefined, 'FAST');
+            
+            resultArea.innerHTML = `<p style='color:#ef4444; font-weight:600;'>Processing: ${Math.round((i / pdf.numPages) * 100)}%</p>`;
         }
+
+        finalize(outPdf.output('blob'), 'pdf');
+    } catch (err) {
+        console.error(err);
+        resultArea.innerHTML = "<p style='color:red;'>Error: Failed to process PDF. It may be protected.</p>";
+    }
+}
+
 
         function finalize(blob, type) {
             const now = new Date();
