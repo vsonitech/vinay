@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>आयकर गणना प्रपत्र - Vinay Soni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sheet">
+    <div class="tool-header">
+        <div class="tool-title">Income Tax Calculation Utility <span class="badge">New Tax Regime</span></div>
+        <div class="tool-instruction">
+            कार्मिक अपने GA55 (Estimated) के आधार पर वार्षिक कुल आय (Gross) एवं माह फरवरी तक कुल इनकम टैक्स कटौती दर्ज करके GENERATE पर क्लिक करें, और EXPORT PDF का उपयोग कर अपने प्रपत्र की PDF डाउनलोड करें।
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h3>Employee Details</h3>
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" id="name" placeholder="e.g. Vinay Soni" oninput="this.value=this.value.toUpperCase();">
+            </div>
+            <div class="input-group">
+                <label>PAN</label>
+                <input type="text" id="pan" maxlength="10" placeholder="ABCDE1234F" oninput="this.value=this.value.toUpperCase();">
+            </div>
+            <div class="input-group">
+                <label>Designation</label>
+                <select id="designation">
+                    <option value="">Select Designation</option>
+                    <option>Principal</option>
+                    <option>Vice Principal</option>
+                    <option>Lecturer</option>
+                    <option>Sr. Teacher</option>
+                    <option>Teacher L-1</option>
+                    <option>Teacher L-2</option>
+                    <option>AAO</option>
+                    <option>BCI</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Account No</label>
+                <input type="number" id="bank" placeholder="Bank Account Number">
+            </div>
+            <div class="input-group">
+                <label>Mobile No</label>
+                <input type="number" id="mobile" placeholder="10-digit mobile number">
+            </div>
+            <div class="input-group">
+                <label>Gross Total Salary (₹)</label>
+                <input type="number" id="gross" placeholder="Annual Gross">
+            </div>
+            <div class="input-group">
+                <label>Income Tax Deducted (₹)</label>
+                <input type="number" id="taxPaid" placeholder="Tax already paid">
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button class="btn-primary" onclick="calculate()">Generate Calculation</button>
+        </div>
+    </div>
+    
+    <div class="top-credit">
+        Income Tax Utility 2025-26 ⚡ Automated by Vinay Soni
+    </div>
+</div>
+
+<div id="pdfArea">
+    <div id="outputSection">
+        <div class="table-responsive">
+            <table> 
+                <tr> 
+                    <td colspan="4" class="center"> 
+                        <img src="./headerimage.png" style="width:100%; max-height:120px; object-fit:contain;" alt="Header"> 
+                    </td> 
+                </tr> 
+                <tr> <td colspan="4" class="center bold title-row"> आयकर गणना पत्र वर्ष 2025-26 (कर निर्धारण वर्ष 2026-27) </td> </tr> 
+                <tr> <td colspan="4" class="center bold bg-light"> New Tax Regime </td> </tr> 
+                <tr> 
+                    <td class="bold">नाम कार्मिक:</td> <td id="outName"></td> 
+                    <td class="bold">PAN</td> <td id="outPan"></td> 
+                </tr> 
+                <tr> 
+                    <td class="bold">Designation</td> <td id="outDesignation"></td> 
+                    <td class="bold">Mobile</td> <td id="outMobile"></td> 
+                </tr> 
+                <tr> 
+                    <td class="bold">Bank A/C No.</td> <td id="outBank"></td> 
+                    <td class="bold">Date</td> <td id="outDate"></td> 
+                </tr> 
+                <tr> <td colspan="3">वित्तीय वर्ष 2025-26 में प्राप्त कुल वेतन</td> <td class="right bold" id="grossOut"></td> </tr> 
+                <tr> <td colspan="3">स्टेण्डर्ड डिडक्शन (धारा 16)</td> <td class="right text-muted">75,000₹</td> </tr> 
+                <tr class="total-row"> <td colspan="3">कर योग्य आय</td> <td class="right highlight" id="taxable"></td> </tr> 
+                <tr> <td colspan="3">धारा 288A के अनुसार पूर्णांक</td> <td class="right" id="rounded"></td> </tr> 
+                <tr class="section-title"> <td colspan="4" class="center">आयकर की गणना (New Tax Regime Slab)</td> </tr> 
+                <tr><td colspan="3">4,00,001 से 8,00,000 तक 5%</td><td class="right" id="slab1"></td></tr> 
+                <tr><td colspan="3">8,00,001 से 12,00,000 तक 10%</td><td class="right" id="slab2"></td></tr> 
+                <tr><td colspan="3">12,00,001 से 16,00,000 तक 15%</td><td class="right" id="slab3"></td></tr> 
+                <tr><td colspan="3">16,00,001 से 20,00,000 तक 20%</td><td class="right" id="slab4"></td></tr> 
+                <tr><td colspan="3">20,00,001 से 24,00,000 तक 25%</td><td class="right" id="slab5"></td></tr> 
+                <tr><td colspan="3">24,00,001 से अधिक 30%</td><td class="right" id="slab6"></td></tr> 
+                <tr class="total-row"> <td colspan="3">योग आयकर</td> <td class="right bold" id="incomeTax"></td> </tr> 
+                <tr> <td colspan="3">छूट धारा 87(A)</td> <td class="right text-muted" id="rebate"></td> </tr> 
+                <tr class="total-row"> <td colspan="3">शेष आयकर</td> <td class="right bold" id="netTax"></td> </tr> 
+                <tr> <td colspan="3">उपकर 4%</td> <td class="right text-muted" id="cess"></td> </tr> 
+                <tr class="total-row highlight-row"> <td colspan="3">कुल आयकर देयता</td> <td class="right bold" id="totalLiability"></td> </tr> 
+                <tr> <td colspan="3">Total Tax Paid Already</td> <td class="right" id="taxPaidOut"></td> </tr> 
+                <tr class="total-row final-status"> <td colspan="3" id="finalLabel">Income Tax Refundable</td> <td class="right bold" id="refund"></td> </tr> 
+                <tr> 
+                    <td colspan="2" class="signature-box">Signature of Employee</td> 
+                    <td colspan="2" class="signature-box">Signature of DDO (Pinki Kumari)</td> 
+                </tr> 
+                <tr> <td colspan="4" class="disclaimer"> This calculation is generated for reference purposes only. </td> </tr> 
+                <tr> <td colspan="4" class="credit-line"> <b>Vinay Soni </b> </td> </tr> 
+            </table>
+        </div>
+
+        <div class="button-row no-print action-buttons">
+            <button class="btn-secondary" onclick="window.print()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 5px; vertical-align: middle;"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg> Print
+            </button>
+            
+        </div>
+    </div>
+</div>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="./script.js"></script>
+
+</body>
+                                                                                                                        </html>
+                                                                                                                        
