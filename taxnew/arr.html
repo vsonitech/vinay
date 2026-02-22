@@ -275,89 +275,185 @@
 
     <script>
         function generateSheet() {
-            // Number of months
-            const m = parseInt(document.getElementById('i_months').value) || 0;
 
-            // Header Details
-            document.getElementById('o_school').innerText = document.getElementById('i_school').value.toUpperCase();
-            document.getElementById('o_name').innerText = document.getElementById('i_name').value.toUpperCase();
-            document.getElementById('sig_name').innerText = document.getElementById('i_name').value.toUpperCase();
-            document.getElementById('o_post').innerText = document.getElementById('i_post').value.toUpperCase();
-            document.getElementById('o_matrix').innerText = document.getElementById('i_matrix').value.toUpperCase();
-            document.getElementById('o_gpf').innerText = document.getElementById('i_gpf').value.toUpperCase();
-            document.getElementById('o_period').innerText = document.getElementById('i_period').value;
-            document.getElementById('o_place').innerText = document.getElementById('i_place').value.toUpperCase();
+    const months = parseInt(document.getElementById('i_months').value) || 0;
+    const matrix = document.getElementById('i_matrix').value.trim();
 
-            // Due Calculations (Monthly -> Total)
-            const dueP = (parseInt(document.getElementById('d_basic').value) || 0) * m;
-            const dueDA = Math.round(dueP * ((parseFloat(document.getElementById('d_da_perc').value) || 0) / 100));
-            const dueH = Math.round(dueP * ((parseFloat(document.getElementById('d_hra_perc').value) || 0) / 100));
-            const dueT = dueP + dueDA + dueH;
+    const basicDue = parseInt(document.getElementById('d_basic').value) || 0;
+    const basicDrawn = parseInt(document.getElementById('dr_basic').value) || 0;
 
-            // Drawn Calculations (Monthly -> Total)
-            const drP = (parseInt(document.getElementById('dr_basic').value) || 0) * m;
-            const drDA = Math.round(drP * ((parseFloat(document.getElementById('dr_da_perc').value) || 0) / 100));
-            const drH = Math.round(drP * ((parseFloat(document.getElementById('dr_hra_perc').value) || 0) / 100));
-            const drT = drP + drDA + drH;
+    const daDuePerc = parseFloat(document.getElementById('d_da_perc').value) || 0;
+    const daDrawnPerc = parseFloat(document.getElementById('dr_da_perc').value) || 0;
 
-            // Differences
-            const dfP = dueP - drP;
-            const dfDA = dueDA - drDA;
-            const dfH = dueH - drH;
-            const dfT = dueT - drT;
+    const hraDuePerc = parseFloat(document.getElementById('d_hra_perc').value) || 0;
+    const hraDrawnPerc = parseFloat(document.getElementById('dr_hra_perc').value) || 0;
 
-            // Deductions
-            const npsD = (parseInt(document.getElementById('d_nps').value) || 0) * m;
-            const npsDed = (parseInt(document.getElementById('dr_nps').value) || 0) * m;
-            const npsDf = npsD - npsDed;
+    const siDueMonthly = parseInt(document.getElementById('d_si').value) || 0;
+    const siDrawnMonthly = parseInt(document.getElementById('dr_si').value) || 0;
 
-            const siD = (parseInt(document.getElementById('d_si').value) || 0) * m;
-            const siDed = (parseInt(document.getElementById('dr_si').value) || 0) * m;
-            const siDf = siD - siDed;
+    const rghsDueMonthly = parseInt(document.getElementById('d_rghs').value) || 0;
+    const rghsDrawnMonthly = parseInt(document.getElementById('dr_rghs').value) || 0;
 
-            const rghsD = (parseInt(document.getElementById('d_rghs').value) || 0) * m;
-            const rghsDed = (parseInt(document.getElementById('dr_rghs').value) || 0) * m;
-            const rghsDf = rghsD - rghsDed;
+    const gpfManual = parseInt(document.getElementById('t_gpf').value) || 0;
+    const itManual = parseInt(document.getElementById('t_it').value) || 0;
 
-            const gpf = parseInt(document.getElementById('t_gpf').value) || 0;
-            const it = parseInt(document.getElementById('t_it').value) || 0;
+    const tbody = document.querySelector("tbody");
+    tbody.innerHTML = "";
 
-            const totalDed = npsDf + siDf + rghsDf + gpf + it;
-            const netPay = dfT - totalDed;
+    let totals = {
+        dueP:0, dueDA:0, dueH:0, dueT:0,
+        drP:0, drDA:0, drH:0, drT:0,
+        dfP:0, dfDA:0, dfH:0, dfT:0,
+        npsD:0, npsDed:0, npsDf:0,
+        siD:0, siDed:0, siDf:0,
+        rghsD:0, rghsDed:0, rghsDf:0
+    };
 
-            // Populate Table
-            document.getElementById('td_due_p').innerText = dueP;
-            document.getElementById('td_due_da').innerText = dueDA;
-            document.getElementById('td_due_h').innerText = dueH;
-            document.getElementById('td_due_t').innerText = dueT;
+    for (let i = 1; i <= months; i++) {
 
-            document.getElementById('td_dr_p').innerText = drP;
-            document.getElementById('td_dr_da').innerText = drDA;
-            document.getElementById('td_dr_h').innerText = drH;
-            document.getElementById('td_dr_t').innerText = drT;
+        // ----- DUE -----
+        let dueDA = Math.round(basicDue * daDuePerc / 100);
+        let dueH = Math.round(basicDue * hraDuePerc / 100);
+        let dueT = basicDue + dueDA + dueH;
 
-            document.getElementById('td_df_p').innerText = dfP;
-            document.getElementById('td_df_da').innerText = dfDA;
-            document.getElementById('td_df_h').innerText = dfH;
-            document.getElementById('td_df_t').innerText = dfT;
+        // ----- DRAWN -----
+        let drDA = Math.round(basicDrawn * daDrawnPerc / 100);
+        let drH = Math.round(basicDrawn * hraDrawnPerc / 100);
+        let drT = basicDrawn + drDA + drH;
 
-            document.getElementById('td_nps_d').innerText = npsD;
-            document.getElementById('td_nps_ded').innerText = npsDed;
-            document.getElementById('td_nps_df').innerText = npsDf;
+        // ----- DIFFERENCE -----
+        let dfP = basicDue - basicDrawn;
+        let dfDA = dueDA - drDA;
+        let dfH = dueH - drH;
+        let dfT = dueT - drT;
 
-            document.getElementById('td_si_d').innerText = siD;
-            document.getElementById('td_si_ded').innerText = siDed;
-            document.getElementById('td_si_df').innerText = siDf;
+        // ----- NPS (10% of Basic+DA) -----
+        let npsD = Math.round((basicDue + dueDA) * 0.10);
+        let npsDed = Math.round((basicDrawn + drDA) * 0.10);
+        let npsDf = npsD - npsDed;
 
-            document.getElementById('td_rghs_d').innerText = rghsD;
-            document.getElementById('td_rghs_ded').innerText = rghsDed;
-            document.getElementById('td_rghs_df').innerText = rghsDf;
+        // ----- SI -----
+        let siDf = siDueMonthly - siDrawnMonthly;
 
-            document.getElementById('td_gpf').innerText = gpf;
-            document.getElementById('td_it').innerText = it;
-            document.getElementById('td_total_ded').innerText = totalDed;
-            document.getElementById('td_net_pay').innerText = netPay;
+        // ----- RGHS -----
+        let rghsDf = rghsDueMonthly - rghsDrawnMonthly;
 
+        // ---- ADD TO TOTALS ----
+        totals.dueP += basicDue;
+        totals.dueDA += dueDA;
+        totals.dueH += dueH;
+        totals.dueT += dueT;
+
+        totals.drP += basicDrawn;
+        totals.drDA += drDA;
+        totals.drH += drH;
+        totals.drT += drT;
+
+        totals.dfP += dfP;
+        totals.dfDA += dfDA;
+        totals.dfH += dfH;
+        totals.dfT += dfT;
+
+        totals.npsD += npsD;
+        totals.npsDed += npsDed;
+        totals.npsDf += npsDf;
+
+        totals.siD += siDueMonthly;
+        totals.siDed += siDrawnMonthly;
+        totals.siDf += siDf;
+
+        totals.rghsD += rghsDueMonthly;
+        totals.rghsDed += rghsDrawnMonthly;
+        totals.rghsDf += rghsDf;
+
+        // ----- ROW OUTPUT -----
+        tbody.innerHTML += `
+        <tr>
+            <td>${i}</td>
+            <td>Month ${i}</td>
+            <td>${basicDue}</td>
+            <td>${dueDA}</td>
+            <td>${dueH}</td>
+            <td>${dueT}</td>
+
+            <td>${basicDrawn}</td>
+            <td>${drDA}</td>
+            <td>${drH}</td>
+            <td>${drT}</td>
+
+            <td>${dfP}</td>
+            <td>${dfDA}</td>
+            <td>${dfH}</td>
+            <td>${dfT}</td>
+
+            <td>${npsD}</td>
+            <td>${npsDed}</td>
+            <td>${npsDf}</td>
+
+            <td>${siDueMonthly}</td>
+            <td>${siDrawnMonthly}</td>
+            <td>${siDf}</td>
+
+            <td>${rghsDueMonthly}</td>
+            <td>${rghsDrawnMonthly}</td>
+            <td>${rghsDf}</td>
+
+            <td>0</td>
+            <td>0</td>
+        </tr>`;
+    }
+
+    // ----- BONUS RULE -----
+    let bonus = 0;
+    if (matrix.includes("L-12")) {
+        bonus = 6000;
+    }
+
+    // ----- TOTAL DED -----
+    let totalDed = totals.npsDf + totals.siDf + totals.rghsDf + gpfManual + itManual;
+
+    // ----- NET PAY -----
+    let netPay = totals.dfT + bonus - totalDed;
+
+    // ---- APPEND GRAND TOTAL ROW ----
+    tbody.innerHTML += `
+    <tr style="font-weight:bold;background:#f0f0f0">
+        <td colspan="2">GRAND TOTAL</td>
+        <td>${totals.dueP}</td>
+        <td>${totals.dueDA}</td>
+        <td>${totals.dueH}</td>
+        <td>${totals.dueT}</td>
+
+        <td>${totals.drP}</td>
+        <td>${totals.drDA}</td>
+        <td>${totals.drH}</td>
+        <td>${totals.drT}</td>
+
+        <td>${totals.dfP}</td>
+        <td>${totals.dfDA}</td>
+        <td>${totals.dfH}</td>
+        <td>${totals.dfT}</td>
+
+        <td>${totals.npsD}</td>
+        <td>${totals.npsDed}</td>
+        <td>${totals.npsDf}</td>
+
+        <td>${totals.siD}</td>
+        <td>${totals.siDed}</td>
+        <td>${totals.siDf}</td>
+
+        <td>${totals.rghsD}</td>
+        <td>${totals.rghsDed}</td>
+        <td>${totals.rghsDf}</td>
+
+        <td>${gpfManual}</td>
+        <td>${itManual}</td>
+    </tr>`;
+
+    document.getElementById("td_total_ded").innerText = totalDed;
+    document.getElementById("td_net_pay").innerText = netPay;
+    document.getElementById("o_words").innerText = "Rupees " + numberToWords(netPay);
+}
             // Number to Words
             document.getElementById('o_words').innerText = 'Rupees ' + numberToWords(netPay);
 
