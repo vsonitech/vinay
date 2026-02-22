@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page.title }}</title>
+
+<style>
+body {
+  margin:0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background:#f4f6f9;
+  color:#333;
+}
+.header {
+  background:#111827;
+  color:white;
+  padding:40px 20px;
+  text-align:center;
+}
+.container {
+  max-width:800px;
+  margin:auto;
+  padding:20px;
+}
+.card {
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 6px 16px rgba(0,0,0,0.05);
+}
+a { color:#2563eb; text-decoration:none; }
+</style>
+
+</head>
+<body>
+
+<header class="header">
+  <h1>{{ page.title }}</h1>
+  <p>{{ page.date | date: "%d %B %Y" }}</p>
+</header>
+
+<div class="container">
+  <div class="card">
+    {{ content }}
+  </div>
+</div>
+
+</body>
+</html>
