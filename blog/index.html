@@ -18,60 +18,44 @@ body {
   margin:auto;
   padding:20px;
 }
-.post-card {
-  background:white;
-  padding:20px;
-  margin-bottom:20px;
-  border-radius:14px;
-  box-shadow:0 6px 16px rgba(0,0,0,0.05);
-  transition:.2s;
-}
-.post-card:hover {
-  transform:translateY(-4px);
-}
-.post-card h2 {
-  margin:0 0 8px;
-}
-.date {
-  font-size:14px;
-  color:#666;
-}
-a { text-decoration:none; color:#111827; }
-a:hover { color:#2563eb; }
-
-.blog-grid {
-  max-width:900px;
+.blog-grid{
+  max-width:1000px;
   margin:auto;
-  padding:20px;
+  padding:40px 20px;
 }
 
-.post-card {
+.post-card{
   background:white;
   padding:25px;
-  margin-bottom:20px;
-  border-radius:18px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.05);
-  transition:.2s;
+  margin-bottom:25px;
+  border-radius:22px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.07);
+  transition:.25s;
 }
-
-.post-card:hover {
-  transform:translateY(-5px);
+.post-card:hover{
+  transform:translateY(-6px);
 }
-
-.post-card h2 {
-  margin:0 0 8px;
+.thumb{
+  width:100%;
+  border-radius:16px;
+  margin-bottom:15px;
 }
-
-.post-card a {
+.post-card h2{
+  margin:0 0 10px;
+}
+.post-card a{
   text-decoration:none;
-  color:#111827;
+  color:#4f46e5;
 }
-
-.readmore {
+.readmore{
   display:inline-block;
-  margin-top:10px;
-  color:#2563eb;
+  margin-top:12px;
+  color:#db2777;
   font-weight:600;
+}
+.date{
+  font-size:14px;
+  color:#6b7280;
 }
 </style>
 </head>
@@ -81,11 +65,17 @@ a:hover { color:#2563eb; }
 <div class="blog-grid">
 {% for post in site.posts %}
   <div class="post-card">
+    {% if post.image %}
+      <img src="{{ post.image }}" class="thumb">
+    {% endif %}
+
     <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
     <p class="date">{{ post.date | date: "%d %B %Y" }}</p>
     <p>{{ post.excerpt | strip_html | truncate: 120 }}</p>
-    <a class="readmore" href="{{ post.url }}">Read More →</a>
+    <a class="readmore" href="{{ post.url }}">Read Article →</a>
   </div>
+{% endfor %}
+</div>
 {% endfor %}
 </div>
 
