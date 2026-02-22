@@ -3,66 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Difference Arrear Sheet Calculator</title>
+    <title>Difference Arrear Sheet</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             font-size: 12px;
         }
-        /* --- Form Styles --- */
-        .form-section {
-            background: #f9f9f9;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .form-section h2 { margin-top: 0; }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .form-group label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .form-group input {
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .section-title {
-            grid-column: 1 / -1;
-            background: #395cb5;
-            color: white;
-            padding: 8px;
-            margin-top: 10px;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 20px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 20px;
-        }
-        button:hover { background: #218838; }
-
-        /* --- Arrear Sheet Styles --- */
+        /* --- Sheet Styles --- */
         .sheet-container {
-            display: none; /* Hidden until generated */
             border: 1px solid #000;
             padding: 10px;
             background: #fff;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         .header-banner {
             background-color: #395cb5;
@@ -73,22 +27,46 @@
             padding: 10px;
             margin-bottom: 5px;
         }
-        .school-name {
+        
+        .header-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+        .header-inputs .col {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+        .input-group strong {
+            width: 90px;
+            font-size: 13px;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 4px;
+            border: 1px dashed #ccc;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .school-input {
+            width: 100%;
             text-align: center;
             font-weight: bold;
             font-size: 14px;
+            border: 1px dashed #ccc;
+            padding: 5px;
             margin-bottom: 15px;
+            box-sizing: border-box;
         }
-        .emp-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 13px;
-            padding: 0 10px;
-        }
-        .emp-details div { line-height: 1.6; }
-        .emp-details strong { display: inline-block; width: 80px; }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -106,88 +84,91 @@
             white-space: nowrap;
             padding: 10px 2px !important;
         }
-        .blue-text { color: #0000ff; }
-        .red-text { color: #ff0000; }
-        .green-text { color: #00a000; font-weight: bold; }
-        .text-left { text-align: left; padding-left: 10px; }
+        
+        /* Interactive cell styles */
+        .calc-input {
+            width: 45px;
+            padding: 2px;
+            border: 1px solid #007bff;
+            text-align: center;
+            font-size: 11px;
+            color: #0000ff;
+            background: #f8fbff;
+        }
+        .calc-input:focus { outline: 2px solid #0056b3; background: #fff; }
+        
+        .readonly {
+            background: transparent;
+            border: none;
+            font-weight: bold;
+            color: #000;
+            width: 45px;
+            text-align: center;
+            pointer-events: none;
+        }
+        .red-text { color: #ff0000 !important; }
+        .green-text { color: #00a000 !important; font-size: 12px; }
+        .blue-text { color: #0000ff !important; }
+        .text-left { text-align: left; padding-left: 10px; font-weight: bold; }
         
         .signatures {
             display: flex;
             justify-content: space-between;
-            margin-top: 40px;
-            padding: 0 20px;
+            margin-top: 50px;
+            padding: 0 40px;
         }
         .signatures div { text-align: center; font-weight: bold; }
-        
-        .actions { margin-bottom: 20px; display: none; }
+        .sig-name {
+            border: none;
+            border-bottom: 1px dashed #000;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .actions { margin: 20px auto; text-align: center; max-width: 1400px; }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background: #0056b3; }
 
         /* Print Specific Styles */
         @media print {
-            .form-section, .actions { display: none !important; }
-            .sheet-container { display: block !important; border: none; padding: 0; }
+            .actions { display: none !important; }
+            .sheet-container { border: none; padding: 0; }
+            .input-group input, .school-input, .sig-name { border: none !important; background: transparent !important; }
+            .calc-input { border: none !important; background: transparent !important; }
             @page { size: landscape; margin: 10mm; }
         }
     </style>
 </head>
 <body>
 
-    <div class="form-section" id="inputForm">
-        <h2>Enter Arrear Details</h2>
-        <form id="arrearForm">
-            <div class="form-grid">
-                <div class="section-title">Employee & Office Details</div>
-                <div class="form-group"><label>School/Office Name</label><input type="text" id="i_school" required></div>
-                <div class="form-group"><label>Employee Name</label><input type="text" id="i_name" required></div>
-                <div class="form-group"><label>Post</label><input type="text" id="i_post" required></div>
-                <div class="form-group"><label>Pay Matrix</label><input type="text" id="i_matrix" value="L-12"></div>
-                <div class="form-group"><label>GPF/PRAN No</label><input type="text" id="i_gpf"></div>
-                <div class="form-group"><label>Arrear Period (Text)</label><input type="text" id="i_period" placeholder="e.g. Jul-25 to Oct-25" required></div>
-                <div class="form-group"><label>Posting Place</label><input type="text" id="i_place"></div>
-                <div class="form-group"><label>Number of Months</label><input type="number" id="i_months" value="4" required></div>
-
-                <div class="section-title">Monthly Pay Due (New Salary per month)</div>
-                <div class="form-group"><label>Basic Pay Due</label><input type="number" id="d_basic" required></div>
-                <div class="form-group"><label>DA % Due</label><input type="number" id="d_da_perc" value="0"></div>
-                <div class="form-group"><label>HRA % Due</label><input type="number" id="d_hra_perc" value="0"></div>
-                <div class="form-group"><label>NPS Due</label><input type="number" id="d_nps" value="0"></div>
-                <div class="form-group"><label>SI Due</label><input type="number" id="d_si" value="0"></div>
-                <div class="form-group"><label>RGHS Due</label><input type="number" id="d_rghs" value="0"></div>
-
-                <div class="section-title">Monthly Pay Drawn (Old Salary per month)</div>
-                <div class="form-group"><label>Basic Pay Drawn</label><input type="number" id="dr_basic" required></div>
-                <div class="form-group"><label>DA % Drawn</label><input type="number" id="dr_da_perc" value="0"></div>
-                <div class="form-group"><label>HRA % Drawn</label><input type="number" id="dr_hra_perc" value="0"></div>
-                <div class="form-group"><label>NPS Deducted</label><input type="number" id="dr_nps" value="0"></div>
-                <div class="form-group"><label>SI Deducted</label><input type="number" id="dr_si" value="0"></div>
-                <div class="form-group"><label>RGHS Deducted</label><input type="number" id="dr_rghs" value="0"></div>
-
-                <div class="section-title">One-Time Deductions (Total Amount)</div>
-                <div class="form-group"><label>Arrear GPF Total</label><input type="number" id="t_gpf" value="0"></div>
-                <div class="form-group"><label>Income Tax (IT) Total</label><input type="number" id="t_it" value="0"></div>
-            </div>
-            <button type="button" onclick="generateSheet()">Calculate & Generate Sheet</button>
-        </form>
-    </div>
-
-    <div class="actions" id="actionButtons">
-        <button onclick="window.print()" style="background: #007bff;">Print / Save as PDF</button>
-        <button onclick="editDetails()" style="background: #6c757d;">Edit Details</button>
+    <div class="actions">
+        <button onclick="window.print()">Print / Save as PDF</button>
+        <p style="color: #555; font-size: 12px; margin-top: 10px;">Type your base totals into the blue boxes. Formulas will calculate automatically.</p>
     </div>
 
     <div class="sheet-container" id="outputSheet">
         <div class="header-banner">Difference Arrear Sheet</div>
-        <div class="school-name" id="o_school">OFFICE SCHOOL NAME GOES HERE</div>
+        <input type="text" class="school-input" value="OFFICE SCHOOL NAME GOES HERE">
         
-        <div class="emp-details">
-            <div>
-                <div><strong>Name:</strong> <span id="o_name"></span></div>
-                <div><strong>Post:</strong> <span id="o_post"></span></div>
-                <div><strong>Pay Matrix:</strong> <span id="o_matrix"></span></div>
+        <div class="header-inputs">
+            <div class="col">
+                <div class="input-group"><strong>Name:</strong><input type="text" value="EMPLOYEE NAME" id="empName" oninput="document.getElementById('sigName').value = this.value"></div>
+                <div class="input-group"><strong>Post:</strong><input type="text" value="SR. TEACHER"></div>
+                <div class="input-group"><strong>Pay Matrix:</strong><input type="text" value="L-12"></div>
             </div>
-            <div>
-                <div><strong>GPF:</strong> <span id="o_gpf"></span></div>
-                <div><strong>Arrear From:</strong> <span id="o_period"></span></div>
-                <div><strong>Posting:</strong> <span id="o_place"></span></div>
+            <div class="col">
+                <div class="input-group"><strong>GPF/PRAN:</strong><input type="text" value="GPF-2004"></div>
+                <div class="input-group"><strong>Arrear From:</strong><input type="text" value="Jul-25 to Oct-26"></div>
+                <div class="input-group"><strong>Posting:</strong><input type="text" value="SCHOOL PLACE"></div>
             </div>
         </div>
 
@@ -223,40 +204,40 @@
             <tbody>
                 <tr>
                     <td colspan="2" style="font-weight: bold;">GRAND TOTAL</td>
-                    <td id="td_due_p" class="blue-text">0</td>
-                    <td id="td_due_da" class="blue-text">0</td>
-                    <td id="td_due_h" class="blue-text">0</td>
-                    <td id="td_due_t" class="blue-text">0</td>
-                    <td id="td_dr_p" class="blue-text">0</td>
-                    <td id="td_dr_da" class="blue-text">0</td>
-                    <td id="td_dr_h" class="blue-text">0</td>
-                    <td id="td_dr_t" class="blue-text">0</td>
-                    <td id="td_df_p" class="blue-text">0</td>
-                    <td id="td_df_da" class="blue-text">0</td>
-                    <td id="td_df_h" class="blue-text">0</td>
-                    <td id="td_df_t" class="blue-text">0</td>
-                    <td id="td_nps_d" class="blue-text">0</td>
-                    <td id="td_nps_ded" class="blue-text">0</td>
-                    <td id="td_nps_df" class="blue-text">0</td>
-                    <td id="td_si_d" class="blue-text">0</td>
-                    <td id="td_si_ded" class="blue-text">0</td>
-                    <td id="td_si_df" class="blue-text">0</td>
-                    <td class="blue-text">0</td>
-                    <td class="blue-text">0</td>
-                    <td class="blue-text">0</td>
-                    <td id="td_rghs_d" class="blue-text">0</td>
-                    <td id="td_rghs_ded" class="blue-text">0</td>
-                    <td id="td_rghs_df" class="blue-text">0</td>
-                    <td id="td_gpf" class="blue-text">0</td>
-                    <td id="td_it" class="blue-text">0</td>
-                    <td id="td_total_ded" class="red-text">0</td>
-                    <td id="td_net_pay" class="green-text">0</td>
+                    <td><input type="number" id="due_p" class="calc-input" value="360000"></td>
+                    <td><input type="number" id="due_da" class="calc-input" value="216000"></td>
+                    <td><input type="number" id="due_h" class="calc-input" value="36000"></td>
+                    <td><input type="text" id="due_t" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="number" id="drawn_p" class="calc-input" value="336000"></td>
+                    <td><input type="number" id="drawn_da" class="calc-input" value="201600"></td>
+                    <td><input type="number" id="drawn_h" class="calc-input" value="33600"></td>
+                    <td><input type="text" id="drawn_t" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="text" id="diff_p" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="text" id="diff_da" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="text" id="diff_h" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="text" id="diff_t" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="number" id="nps_d" class="calc-input" value="6000"></td>
+                    <td><input type="number" id="nps_ded" class="calc-input" value="4800"></td>
+                    <td><input type="text" id="nps_df" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="number" id="si_d" class="calc-input" value="0"></td>
+                    <td><input type="number" id="si_ded" class="calc-input" value="0"></td>
+                    <td><input type="text" id="si_df" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="number" id="cor_d" class="calc-input" value="0"></td>
+                    <td><input type="number" id="cor_ded" class="calc-input" value="0"></td>
+                    <td><input type="text" id="cor_df" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="number" id="rghs_d" class="calc-input" value="2400"></td>
+                    <td><input type="number" id="rghs_ded" class="calc-input" value="1200"></td>
+                    <td><input type="text" id="rghs_df" class="readonly blue-text" tabindex="-1"></td>
+                    <td><input type="number" id="gpf" class="calc-input" value="18000"></td>
+                    <td><input type="number" id="it" class="calc-input" value="600"></td>
+                    <td><input type="text" id="total_ded" class="readonly red-text" tabindex="-1"></td>
+                    <td><input type="text" id="net_pay" class="readonly green-text" tabindex="-1"></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td colspan="2" style="font-weight: bold;">Net Pay (In Words)</td>
-                    <td colspan="32" class="text-left" id="o_words">Rupees Zero Only</td>
+                    <td colspan="32" class="text-left" id="words_output">Rupees Zero Only</td>
                 </tr>
             </tbody>
         </table>
@@ -264,7 +245,7 @@
         <div class="signatures">
             <div>
                 Employee Name<br>
-                <span id="sig_name"></span>
+                <input type="text" class="sig-name" id="sigName" value="EMPLOYEE NAME">
             </div>
             <div>
                 Drawing & Dispersal Officer<br>
@@ -274,202 +255,7 @@
     </div>
 
     <script>
-        function generateSheet() {
-
-    const months = parseInt(document.getElementById('i_months').value) || 0;
-    const matrix = document.getElementById('i_matrix').value.trim();
-
-    const basicDue = parseInt(document.getElementById('d_basic').value) || 0;
-    const basicDrawn = parseInt(document.getElementById('dr_basic').value) || 0;
-
-    const daDuePerc = parseFloat(document.getElementById('d_da_perc').value) || 0;
-    const daDrawnPerc = parseFloat(document.getElementById('dr_da_perc').value) || 0;
-
-    const hraDuePerc = parseFloat(document.getElementById('d_hra_perc').value) || 0;
-    const hraDrawnPerc = parseFloat(document.getElementById('dr_hra_perc').value) || 0;
-
-    const siDueMonthly = parseInt(document.getElementById('d_si').value) || 0;
-    const siDrawnMonthly = parseInt(document.getElementById('dr_si').value) || 0;
-
-    const rghsDueMonthly = parseInt(document.getElementById('d_rghs').value) || 0;
-    const rghsDrawnMonthly = parseInt(document.getElementById('dr_rghs').value) || 0;
-
-    const gpfManual = parseInt(document.getElementById('t_gpf').value) || 0;
-    const itManual = parseInt(document.getElementById('t_it').value) || 0;
-
-    const tbody = document.querySelector("tbody");
-    tbody.innerHTML = "";
-
-    let totals = {
-        dueP:0, dueDA:0, dueH:0, dueT:0,
-        drP:0, drDA:0, drH:0, drT:0,
-        dfP:0, dfDA:0, dfH:0, dfT:0,
-        npsD:0, npsDed:0, npsDf:0,
-        siD:0, siDed:0, siDf:0,
-        rghsD:0, rghsDed:0, rghsDf:0
-    };
-
-    for (let i = 1; i <= months; i++) {
-
-        // ----- DUE -----
-        let dueDA = Math.round(basicDue * daDuePerc / 100);
-        let dueH = Math.round(basicDue * hraDuePerc / 100);
-        let dueT = basicDue + dueDA + dueH;
-
-        // ----- DRAWN -----
-        let drDA = Math.round(basicDrawn * daDrawnPerc / 100);
-        let drH = Math.round(basicDrawn * hraDrawnPerc / 100);
-        let drT = basicDrawn + drDA + drH;
-
-        // ----- DIFFERENCE -----
-        let dfP = basicDue - basicDrawn;
-        let dfDA = dueDA - drDA;
-        let dfH = dueH - drH;
-        let dfT = dueT - drT;
-
-        // ----- NPS (10% of Basic+DA) -----
-        let npsD = Math.round((basicDue + dueDA) * 0.10);
-        let npsDed = Math.round((basicDrawn + drDA) * 0.10);
-        let npsDf = npsD - npsDed;
-
-        // ----- SI -----
-        let siDf = siDueMonthly - siDrawnMonthly;
-
-        // ----- RGHS -----
-        let rghsDf = rghsDueMonthly - rghsDrawnMonthly;
-
-        // ---- ADD TO TOTALS ----
-        totals.dueP += basicDue;
-        totals.dueDA += dueDA;
-        totals.dueH += dueH;
-        totals.dueT += dueT;
-
-        totals.drP += basicDrawn;
-        totals.drDA += drDA;
-        totals.drH += drH;
-        totals.drT += drT;
-
-        totals.dfP += dfP;
-        totals.dfDA += dfDA;
-        totals.dfH += dfH;
-        totals.dfT += dfT;
-
-        totals.npsD += npsD;
-        totals.npsDed += npsDed;
-        totals.npsDf += npsDf;
-
-        totals.siD += siDueMonthly;
-        totals.siDed += siDrawnMonthly;
-        totals.siDf += siDf;
-
-        totals.rghsD += rghsDueMonthly;
-        totals.rghsDed += rghsDrawnMonthly;
-        totals.rghsDf += rghsDf;
-
-        // ----- ROW OUTPUT -----
-        tbody.innerHTML += `
-        <tr>
-            <td>${i}</td>
-            <td>Month ${i}</td>
-            <td>${basicDue}</td>
-            <td>${dueDA}</td>
-            <td>${dueH}</td>
-            <td>${dueT}</td>
-
-            <td>${basicDrawn}</td>
-            <td>${drDA}</td>
-            <td>${drH}</td>
-            <td>${drT}</td>
-
-            <td>${dfP}</td>
-            <td>${dfDA}</td>
-            <td>${dfH}</td>
-            <td>${dfT}</td>
-
-            <td>${npsD}</td>
-            <td>${npsDed}</td>
-            <td>${npsDf}</td>
-
-            <td>${siDueMonthly}</td>
-            <td>${siDrawnMonthly}</td>
-            <td>${siDf}</td>
-
-            <td>${rghsDueMonthly}</td>
-            <td>${rghsDrawnMonthly}</td>
-            <td>${rghsDf}</td>
-
-            <td>0</td>
-            <td>0</td>
-        </tr>`;
-    }
-
-    // ----- BONUS RULE -----
-    let bonus = 0;
-    if (matrix.includes("L-12")) {
-        bonus = 6000;
-    }
-
-    // ----- TOTAL DED -----
-    let totalDed = totals.npsDf + totals.siDf + totals.rghsDf + gpfManual + itManual;
-
-    // ----- NET PAY -----
-    let netPay = totals.dfT + bonus - totalDed;
-
-    // ---- APPEND GRAND TOTAL ROW ----
-    tbody.innerHTML += `
-    <tr style="font-weight:bold;background:#f0f0f0">
-        <td colspan="2">GRAND TOTAL</td>
-        <td>${totals.dueP}</td>
-        <td>${totals.dueDA}</td>
-        <td>${totals.dueH}</td>
-        <td>${totals.dueT}</td>
-
-        <td>${totals.drP}</td>
-        <td>${totals.drDA}</td>
-        <td>${totals.drH}</td>
-        <td>${totals.drT}</td>
-
-        <td>${totals.dfP}</td>
-        <td>${totals.dfDA}</td>
-        <td>${totals.dfH}</td>
-        <td>${totals.dfT}</td>
-
-        <td>${totals.npsD}</td>
-        <td>${totals.npsDed}</td>
-        <td>${totals.npsDf}</td>
-
-        <td>${totals.siD}</td>
-        <td>${totals.siDed}</td>
-        <td>${totals.siDf}</td>
-
-        <td>${totals.rghsD}</td>
-        <td>${totals.rghsDed}</td>
-        <td>${totals.rghsDf}</td>
-
-        <td>${gpfManual}</td>
-        <td>${itManual}</td>
-    </tr>`;
-
-    document.getElementById("td_total_ded").innerText = totalDed;
-    document.getElementById("td_net_pay").innerText = netPay;
-    document.getElementById("o_words").innerText = "Rupees " + numberToWords(netPay);
-}
-            // Number to Words
-            document.getElementById('o_words').innerText = 'Rupees ' + numberToWords(netPay);
-
-            // Toggle Views
-            document.getElementById('inputForm').style.display = 'none';
-            document.getElementById('actionButtons').style.display = 'block';
-            document.getElementById('outputSheet').style.display = 'block';
-        }
-
-        function editDetails() {
-            document.getElementById('inputForm').style.display = 'block';
-            document.getElementById('actionButtons').style.display = 'none';
-            document.getElementById('outputSheet').style.display = 'none';
-        }
-
-        // Indian Numbering System to Words Converter
+        // Number to Words function
         function numberToWords(num) {
             if (num === 0) return 'Zero Only';
             let a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
@@ -484,7 +270,67 @@
             str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
             return str.trim() + ' Only';
         }
+
+        // Main Calculation Function
+        function calculateExcelLogics() {
+            // Helper to get number from input safely
+            const getVal = (id) => parseInt(document.getElementById(id).value) || 0;
+            const setVal = (id, val) => document.getElementById(id).value = val;
+
+            // 1. Calculate Pay Due Total
+            let due_p = getVal('due_p'), due_da = getVal('due_da'), due_h = getVal('due_h');
+            let due_t = due_p + due_da + due_h;
+            setVal('due_t', due_t);
+
+            // 2. Calculate Pay Drawn Total
+            let drawn_p = getVal('drawn_p'), drawn_da = getVal('drawn_da'), drawn_h = getVal('drawn_h');
+            let drawn_t = drawn_p + drawn_da + drawn_h;
+            setVal('drawn_t', drawn_t);
+
+            // 3. Calculate Pay Differences
+            let diff_p = due_p - drawn_p;
+            let diff_da = due_da - drawn_da;
+            let diff_h = due_h - drawn_h;
+            let diff_t = due_t - drawn_t;
+            setVal('diff_p', diff_p);
+            setVal('diff_da', diff_da);
+            setVal('diff_h', diff_h);
+            setVal('diff_t', diff_t);
+
+            // 4. Calculate Deduction Differences
+            let nps_df = getVal('nps_d') - getVal('nps_ded');
+            setVal('nps_df', nps_df);
+
+            let si_df = getVal('si_d') - getVal('si_ded');
+            setVal('si_df', si_df);
+
+            let cor_df = getVal('cor_d') - getVal('cor_ded');
+            setVal('cor_df', cor_df);
+
+            let rghs_df = getVal('rghs_d') - getVal('rghs_ded');
+            setVal('rghs_df', rghs_df);
+
+            // 5. Calculate Total Deductions
+            let gpf = getVal('gpf');
+            let it = getVal('it');
+            let total_ded = nps_df + si_df + cor_df + rghs_df + gpf + it;
+            setVal('total_ded', total_ded);
+
+            // 6. Calculate Net Pay
+            let net_pay = diff_t - total_ded;
+            setVal('net_pay', net_pay);
+
+            // 7. Update Words
+            document.getElementById('words_output').innerText = 'Rupees ' + numberToWords(net_pay);
+        }
+
+        // Attach event listeners to all calc-inputs
+        document.querySelectorAll('.calc-input').forEach(input => {
+            input.addEventListener('input', calculateExcelLogics);
+        });
+
+        // Run calculation on page load
+        calculateExcelLogics();
     </script>
 </body>
-  </html>
-                      
+</html>
