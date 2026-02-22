@@ -8,7 +8,60 @@
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+.blog-section{
+  padding:60px 20px;
+  background:linear-gradient(135deg,#ede9fe,#fce7f3);
+  text-align:center;
+}
 
+.home-blog-grid{
+  max-width:1100px;
+  margin:40px auto 0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px;
+}
+
+.home-card{
+  background:white;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.07);
+  transition:.25s;
+  text-align:left;
+}
+.home-card:hover{
+  transform:translateY(-5px);
+}
+.home-card img{
+  width:100%;
+  border-radius:14px;
+  margin-bottom:12px;
+}
+.home-card h3{
+  margin:0 0 10px;
+}
+.home-card a{
+  text-decoration:none;
+  color:#4f46e5;
+}
+.home-read{
+  display:inline-block;
+  margin-top:10px;
+  color:#db2777;
+  font-weight:600;
+}
+.view-all{
+  background:#4f46e5;
+  color:white;
+  padding:12px 22px;
+  border-radius:30px;
+  text-decoration:none;
+  font-weight:600;
+}
+.view-all:hover{
+  background:#4338ca;
+}
 <style>
 body { font-family: 'Inter', sans-serif; }
 .card-hover:hover { transform: translateY(-6px); transition: 0.3s ease; }
@@ -141,6 +194,26 @@ class="block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded
 Open Google Drive Folder
 </a>
 </div>
+  <section class="blog-section">
+  <h2>Latest Blog Posts</h2>
+
+  <div class="home-blog-grid">
+  {% for post in site.posts limit:3 %}
+    <div class="home-card">
+      {% if post.image %}
+        <img src="{{ post.image }}">
+      {% endif %}
+      <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+      <p>{{ post.excerpt | strip_html | truncate: 90 }}</p>
+      <a class="home-read" href="{{ post.url }}">Read More →</a>
+    </div>
+  {% endfor %}
+  </div>
+
+  <div style="text-align:center;margin-top:25px;">
+    <a href="/blog/" class="view-all">View All Posts</a>
+  </div>
+</section>
 </div>
 
 
