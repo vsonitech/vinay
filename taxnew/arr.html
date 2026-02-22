@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Difference Arrear Sheet Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            font-size: 12px;
+        }
+        /* --- Form Styles --- */
+        .form-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-section h2 { margin-top: 0; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .section-title {
+            grid-column: 1 / -1;
+            background: #395cb5;
+            color: white;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        button:hover { background: #218838; }
+
+        /* --- Arrear Sheet Styles --- */
+        .sheet-container {
+            display: none; /* Hidden until generated */
+            border: 1px solid #000;
+            padding: 10px;
+            background: #fff;
+        }
+        .header-banner {
+            background-color: #395cb5;
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+        .school-name {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .emp-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+            padding: 0 10px;
+        }
+        .emp-details div { line-height: 1.6; }
+        .emp-details strong { display: inline-block; width: 80px; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 11px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 4px;
+        }
+        th { background-color: #e6f0ff; }
+        .vertical-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            white-space: nowrap;
+            padding: 10px 2px !important;
+        }
+        .blue-text { color: #0000ff; }
+        .red-text { color: #ff0000; }
+        .green-text { color: #00a000; font-weight: bold; }
+        .text-left { text-align: left; padding-left: 10px; }
+        
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding: 0 20px;
+        }
+        .signatures div { text-align: center; font-weight: bold; }
+        
+        .actions { margin-bottom: 20px; display: none; }
+
+        /* Print Specific Styles */
+        @media print {
+            .form-section, .actions { display: none !important; }
+            .sheet-container { display: block !important; border: none; padding: 0; }
+            @page { size: landscape; margin: 10mm; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-section" id="inputForm">
+        <h2>Enter Arrear Details</h2>
+        <form id="arrearForm">
+            <div class="form-grid">
+                <div class="section-title">Employee & Office Details</div>
+                <div class="form-group"><label>School/Office Name</label><input type="text" id="i_school" required></div>
+                <div class="form-group"><label>Employee Name</label><input type="text" id="i_name" required></div>
+                <div class="form-group"><label>Post</label><input type="text" id="i_post" required></div>
+                <div class="form-group"><label>Pay Matrix</label><input type="text" id="i_matrix" value="L-12"></div>
+                <div class="form-group"><label>GPF/PRAN No</label><input type="text" id="i_gpf"></div>
+                <div class="form-group"><label>Arrear Period (Text)</label><input type="text" id="i_period" placeholder="e.g. Jul-25 to Oct-25" required></div>
+                <div class="form-group"><label>Posting Place</label><input type="text" id="i_place"></div>
+                <div class="form-group"><label>Number of Months</label><input type="number" id="i_months" value="4" required></div>
+
+                <div class="section-title">Monthly Pay Due (New Salary per month)</div>
+                <div class="form-group"><label>Basic Pay Due</label><input type="number" id="d_basic" required></div>
+                <div class="form-group"><label>DA % Due</label><input type="number" id="d_da_perc" value="0"></div>
+                <div class="form-group"><label>HRA % Due</label><input type="number" id="d_hra_perc" value="0"></div>
+                <div class="form-group"><label>NPS Due</label><input type="number" id="d_nps" value="0"></div>
+                <div class="form-group"><label>SI Due</label><input type="number" id="d_si" value="0"></div>
+                <div class="form-group"><label>RGHS Due</label><input type="number" id="d_rghs" value="0"></div>
+
+                <div class="section-title">Monthly Pay Drawn (Old Salary per month)</div>
+                <div class="form-group"><label>Basic Pay Drawn</label><input type="number" id="dr_basic" required></div>
+                <div class="form-group"><label>DA % Drawn</label><input type="number" id="dr_da_perc" value="0"></div>
+                <div class="form-group"><label>HRA % Drawn</label><input type="number" id="dr_hra_perc" value="0"></div>
+                <div class="form-group"><label>NPS Deducted</label><input type="number" id="dr_nps" value="0"></div>
+                <div class="form-group"><label>SI Deducted</label><input type="number" id="dr_si" value="0"></div>
+                <div class="form-group"><label>RGHS Deducted</label><input type="number" id="dr_rghs" value="0"></div>
+
+                <div class="section-title">One-Time Deductions (Total Amount)</div>
+                <div class="form-group"><label>Arrear GPF Total</label><input type="number" id="t_gpf" value="0"></div>
+                <div class="form-group"><label>Income Tax (IT) Total</label><input type="number" id="t_it" value="0"></div>
+            </div>
+            <button type="button" onclick="generateSheet()">Calculate & Generate Sheet</button>
+        </form>
+    </div>
+
+    <div class="actions" id="actionButtons">
+        <button onclick="window.print()" style="background: #007bff;">Print / Save as PDF</button>
+        <button onclick="editDetails()" style="background: #6c757d;">Edit Details</button>
+    </div>
+
+    <div class="sheet-container" id="outputSheet">
+        <div class="header-banner">Difference Arrear Sheet</div>
+        <div class="school-name" id="o_school">OFFICE SCHOOL NAME GOES HERE</div>
+        
+        <div class="emp-details">
+            <div>
+                <div><strong>Name:</strong> <span id="o_name"></span></div>
+                <div><strong>Post:</strong> <span id="o_post"></span></div>
+                <div><strong>Pay Matrix:</strong> <span id="o_matrix"></span></div>
+            </div>
+            <div>
+                <div><strong>GPF:</strong> <span id="o_gpf"></span></div>
+                <div><strong>Arrear From:</strong> <span id="o_period"></span></div>
+                <div><strong>Posting:</strong> <span id="o_place"></span></div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2">Sr</th>
+                    <th rowspan="2">Month</th>
+                    <th colspan="4">Pay Due</th>
+                    <th colspan="4">Pay Drawn</th>
+                    <th colspan="4">Pay Diff</th>
+                    <th colspan="3">NPS</th>
+                    <th colspan="3">SI</th>
+                    <th colspan="3">Corona</th>
+                    <th colspan="3">RGHS</th>
+                    <th rowspan="2" class="vertical-text">Arrear GPF</th>
+                    <th rowspan="2" class="vertical-text">IT</th>
+                    <th rowspan="2" class="vertical-text">Total Ded</th>
+                    <th rowspan="2" class="vertical-text">Net Pay</th>
+                    <th rowspan="2" class="vertical-text">Bill No</th>
+                    <th rowspan="2" class="vertical-text">Encash</th>
+                </tr>
+                <tr>
+                    <th>P</th><th>DA</th><th>H</th><th>T</th>
+                    <th>P</th><th>DA</th><th>H</th><th>T</th>
+                    <th>P</th><th>DA</th><th>H</th><th>T</th>
+                    <th>D</th><th>Ded</th><th>Df</th>
+                    <th>D</th><th>Ded</th><th>Df</th>
+                    <th>D</th><th>Ded</th><th>Df</th>
+                    <th>D</th><th>Ded</th><th>Df</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2" style="font-weight: bold;">GRAND TOTAL</td>
+                    <td id="td_due_p" class="blue-text">0</td>
+                    <td id="td_due_da" class="blue-text">0</td>
+                    <td id="td_due_h" class="blue-text">0</td>
+                    <td id="td_due_t" class="blue-text">0</td>
+                    <td id="td_dr_p" class="blue-text">0</td>
+                    <td id="td_dr_da" class="blue-text">0</td>
+                    <td id="td_dr_h" class="blue-text">0</td>
+                    <td id="td_dr_t" class="blue-text">0</td>
+                    <td id="td_df_p" class="blue-text">0</td>
+                    <td id="td_df_da" class="blue-text">0</td>
+                    <td id="td_df_h" class="blue-text">0</td>
+                    <td id="td_df_t" class="blue-text">0</td>
+                    <td id="td_nps_d" class="blue-text">0</td>
+                    <td id="td_nps_ded" class="blue-text">0</td>
+                    <td id="td_nps_df" class="blue-text">0</td>
+                    <td id="td_si_d" class="blue-text">0</td>
+                    <td id="td_si_ded" class="blue-text">0</td>
+                    <td id="td_si_df" class="blue-text">0</td>
+                    <td class="blue-text">0</td>
+                    <td class="blue-text">0</td>
+                    <td class="blue-text">0</td>
+                    <td id="td_rghs_d" class="blue-text">0</td>
+                    <td id="td_rghs_ded" class="blue-text">0</td>
+                    <td id="td_rghs_df" class="blue-text">0</td>
+                    <td id="td_gpf" class="blue-text">0</td>
+                    <td id="td_it" class="blue-text">0</td>
+                    <td id="td_total_ded" class="red-text">0</td>
+                    <td id="td_net_pay" class="green-text">0</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="font-weight: bold;">Net Pay (In Words)</td>
+                    <td colspan="32" class="text-left" id="o_words">Rupees Zero Only</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="signatures">
+            <div>
+                Employee Name<br>
+                <span id="sig_name"></span>
+            </div>
+            <div>
+                Drawing & Dispersal Officer<br>
+                Signature & Seal
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateSheet() {
+            // Number of months
+            const m = parseInt(document.getElementById('i_months').value) || 0;
+
+            // Header Details
+            document.getElementById('o_school').innerText = document.getElementById('i_school').value.toUpperCase();
+            document.getElementById('o_name').innerText = document.getElementById('i_name').value.toUpperCase();
+            document.getElementById('sig_name').innerText = document.getElementById('i_name').value.toUpperCase();
+            document.getElementById('o_post').innerText = document.getElementById('i_post').value.toUpperCase();
+            document.getElementById('o_matrix').innerText = document.getElementById('i_matrix').value.toUpperCase();
+            document.getElementById('o_gpf').innerText = document.getElementById('i_gpf').value.toUpperCase();
+            document.getElementById('o_period').innerText = document.getElementById('i_period').value;
+            document.getElementById('o_place').innerText = document.getElementById('i_place').value.toUpperCase();
+
+            // Due Calculations (Monthly -> Total)
+            const dueP = (parseInt(document.getElementById('d_basic').value) || 0) * m;
+            const dueDA = Math.round(dueP * ((parseFloat(document.getElementById('d_da_perc').value) || 0) / 100));
+            const dueH = Math.round(dueP * ((parseFloat(document.getElementById('d_hra_perc').value) || 0) / 100));
+            const dueT = dueP + dueDA + dueH;
+
+            // Drawn Calculations (Monthly -> Total)
+            const drP = (parseInt(document.getElementById('dr_basic').value) || 0) * m;
+            const drDA = Math.round(drP * ((parseFloat(document.getElementById('dr_da_perc').value) || 0) / 100));
+            const drH = Math.round(drP * ((parseFloat(document.getElementById('dr_hra_perc').value) || 0) / 100));
+            const drT = drP + drDA + drH;
+
+            // Differences
+            const dfP = dueP - drP;
+            const dfDA = dueDA - drDA;
+            const dfH = dueH - drH;
+            const dfT = dueT - drT;
+
+            // Deductions
+            const npsD = (parseInt(document.getElementById('d_nps').value) || 0) * m;
+            const npsDed = (parseInt(document.getElementById('dr_nps').value) || 0) * m;
+            const npsDf = npsD - npsDed;
+
+            const siD = (parseInt(document.getElementById('d_si').value) || 0) * m;
+            const siDed = (parseInt(document.getElementById('dr_si').value) || 0) * m;
+            const siDf = siD - siDed;
+
+            const rghsD = (parseInt(document.getElementById('d_rghs').value) || 0) * m;
+            const rghsDed = (parseInt(document.getElementById('dr_rghs').value) || 0) * m;
+            const rghsDf = rghsD - rghsDed;
+
+            const gpf = parseInt(document.getElementById('t_gpf').value) || 0;
+            const it = parseInt(document.getElementById('t_it').value) || 0;
+
+            const totalDed = npsDf + siDf + rghsDf + gpf + it;
+            const netPay = dfT - totalDed;
+
+            // Populate Table
+            document.getElementById('td_due_p').innerText = dueP;
+            document.getElementById('td_due_da').innerText = dueDA;
+            document.getElementById('td_due_h').innerText = dueH;
+            document.getElementById('td_due_t').innerText = dueT;
+
+            document.getElementById('td_dr_p').innerText = drP;
+            document.getElementById('td_dr_da').innerText = drDA;
+            document.getElementById('td_dr_h').innerText = drH;
+            document.getElementById('td_dr_t').innerText = drT;
+
+            document.getElementById('td_df_p').innerText = dfP;
+            document.getElementById('td_df_da').innerText = dfDA;
+            document.getElementById('td_df_h').innerText = dfH;
+            document.getElementById('td_df_t').innerText = dfT;
+
+            document.getElementById('td_nps_d').innerText = npsD;
+            document.getElementById('td_nps_ded').innerText = npsDed;
+            document.getElementById('td_nps_df').innerText = npsDf;
+
+            document.getElementById('td_si_d').innerText = siD;
+            document.getElementById('td_si_ded').innerText = siDed;
+            document.getElementById('td_si_df').innerText = siDf;
+
+            document.getElementById('td_rghs_d').innerText = rghsD;
+            document.getElementById('td_rghs_ded').innerText = rghsDed;
+            document.getElementById('td_rghs_df').innerText = rghsDf;
+
+            document.getElementById('td_gpf').innerText = gpf;
+            document.getElementById('td_it').innerText = it;
+            document.getElementById('td_total_ded').innerText = totalDed;
+            document.getElementById('td_net_pay').innerText = netPay;
+
+            // Number to Words
+            document.getElementById('o_words').innerText = 'Rupees ' + numberToWords(netPay);
+
+            // Toggle Views
+            document.getElementById('inputForm').style.display = 'none';
+            document.getElementById('actionButtons').style.display = 'block';
+            document.getElementById('outputSheet').style.display = 'block';
+        }
+
+        function editDetails() {
+            document.getElementById('inputForm').style.display = 'block';
+            document.getElementById('actionButtons').style.display = 'none';
+            document.getElementById('outputSheet').style.display = 'none';
+        }
+
+        // Indian Numbering System to Words Converter
+        function numberToWords(num) {
+            if (num === 0) return 'Zero Only';
+            let a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+            let b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+            if ((num = num.toString()).length > 9) return 'Overflow';
+            let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+            if (!n) return; let str = '';
+            str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+            str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+            str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+            str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+            str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+            return str.trim() + ' Only';
+        }
+    </script>
+</body>
+  </html>
+                      
