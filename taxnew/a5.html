@@ -316,7 +316,10 @@
 
                 // Month Due
                 let m_due_p = Math.round(current_due_basic * fraction);
-                let m_due_da = Math.round(m_due_p * (due_da_perc / 100));
+                let m_due_da = Math.floor(m_due_p * (due_da_perc / 100));
+// ... and ...
+m_dr_da = Math.floor(m_dr_p * (dr_da_perc / 100));
+
                 let m_due_h = Math.round(m_due_p * (due_hra_perc / 100));
                 let m_due_t = m_due_p + m_due_da + m_due_h;
 
