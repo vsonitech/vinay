@@ -13,7 +13,11 @@
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-weight: bold; margin-bottom: 5px; font-size: 11px; }
-        .form-group input { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+        .form-group input, .form-group select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+        
+        .radio-group { display: flex; gap: 15px; margin-top: 5px; }
+        .radio-group label { font-weight: normal; font-size: 13px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        
         .section-title { grid-column: 1 / -1; background: #395cb5; color: white; padding: 8px; margin-top: 15px; border-radius: 4px; font-weight: bold; }
         .btn-container { text-align: center; margin-top: 25px; }
         button { padding: 10px 25px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; }
@@ -63,28 +67,58 @@
                 <div class="section-title">Employee & Office Details</div>
                 <div class="form-group"><label>School/Office Name</label><input type="text" id="i_school" value="OFFICE SCHOOL NAME GOES HERE"></div>
                 <div class="form-group"><label>Employee Name</label><input type="text" id="i_name" value="VINAY SONI"></div>
-                <div class="form-group"><label>Post</label><input type="text" id="i_post" value="SR. TEACHER"></div>
-                <div class="form-group"><label>Pay Matrix</label><input type="text" id="i_matrix" value="L-12"></div>
+                
+                <div class="form-group"><label>Post</label>
+                    <select id="i_post">
+                        <option value="PRINCIPAL">Principal</option>
+                        <option value="LECTURER">Lecturer</option>
+                        <option value="SR. TEACHER" selected>Sr. Teacher</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="AAO">AAO</option>
+                        <option value="BCI">BCI</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Pay Matrix</label>
+                    <select id="i_matrix">
+                        <option value="L-1">L-1</option><option value="L-2">L-2</option><option value="L-3">L-3</option>
+                        <option value="L-4">L-4</option><option value="L-5">L-5</option><option value="L-6">L-6</option>
+                        <option value="L-7">L-7</option><option value="L-8">L-8</option><option value="L-9">L-9</option>
+                        <option value="L-10">L-10</option><option value="L-11">L-11</option><option value="L-12" selected>L-12</option>
+                        <option value="L-13">L-13</option><option value="L-14">L-14</option><option value="L-15">L-15</option>
+                        <option value="L-16">L-16</option>
+                    </select>
+                </div>
+
                 <div class="form-group"><label>GPF No</label><input type="text" id="i_gpf" value="GPF-"></div>
                 <div class="form-group"><label>Posting Place</label><input type="text" id="i_place" value="SCHOOL PLACE"></div>
                 
                 <div class="form-group">
                     <label>Exact Start Date</label>
                     <input type="date" id="i_start_date" required>
-                    <span class="note">Prorates first month automatically.</span>
                 </div>
                 <div class="form-group"><label>End Month</label><input type="month" id="i_end" required></div>
 
                 <div class="section-title">Monthly Pay Due (New Salary)</div>
-                <div class="form-group"><label>Basic Pay</label><input type="number" id="due_basic" value="90000"></div>
+                <div class="form-group"><label>Starting Basic Pay</label><input type="number" id="due_basic" value="90000"></div>
                 <div class="form-group"><label>DA %</label><input type="number" id="due_da_perc" value="58"></div>
                 <div class="form-group"><label>HRA %</label><input type="number" id="due_hra_perc" value="10"></div>
-                <div class="form-group"><label>SI</label><input type="number" id="due_si" value="0"></div>
+                <div class="form-group"><label>Monthly GPF Due</label><input type="number" id="due_gpf_m" value="2100"></div>
+                <div class="form-group"><label>Monthly RGHS Due</label><input type="number" id="due_rghs_m" value="658"></div>
+                <div class="form-group"><label>SI Due</label><input type="number" id="due_si" value="0"></div>
 
                 <div class="section-title">Monthly Pay Drawn (Old Salary)</div>
-                <div class="form-group"><label>Basic Pay</label><input type="number" id="drawn_basic" value="84000"></div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Pay Drawn Mode</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="pay_mode" value="regular" checked> Regular (Includes DA/HRA)</label>
+                        <label><input type="radio" name="pay_mode" value="fix"> Fix Pay (Probation - No DA/HRA)</label>
+                    </div>
+                </div>
+                <div class="form-group"><label>Starting Basic Pay</label><input type="number" id="drawn_basic" value="84000"></div>
                 <div class="form-group"><label>DA %</label><input type="number" id="drawn_da_perc" value="58"></div>
                 <div class="form-group"><label>HRA %</label><input type="number" id="drawn_hra_perc" value="10"></div>
+                <div class="form-group"><label>Monthly GPF Deducted</label><input type="number" id="drawn_gpf_m" value="2100"></div>
+                <div class="form-group"><label>Monthly RGHS Deducted</label><input type="number" id="drawn_rghs_m" value="658"></div>
                 <div class="form-group"><label>SI Deducted</label><input type="number" id="drawn_si" value="0"></div>
 
                 <div class="section-title">One-Time Deductions (Applied to Grand Total)</div>
@@ -93,7 +127,8 @@
             </div>
             
             <p class="note" style="text-align:center; font-size: 12px; margin-top: 15px;">
-                * Monthly GPF and RGHS deductions are calculated automatically based on official Rajasthan Govt slabs.
+                * System will auto-apply a 1.03x basic pay increment every July.<br>
+                * User-defined GPF and RGHS monthly deductions will be applied uniformly across all months.
             </p>
 
             <div class="btn-container">
@@ -153,11 +188,9 @@
                     <th>D</th><th>Ded</th><th>Df</th>
                 </tr>
             </thead>
-            <tbody id="tableBody">
-                </tbody>
+            <tbody id="tableBody"></tbody>
             <tfoot>
-                <tr class="bold-row" id="grandTotalRow">
-                    </tr>
+                <tr class="bold-row" id="grandTotalRow"></tr>
                 <tr>
                     <td colspan="2" class="bold-row">Net Pay (In Words)</td>
                     <td colspan="32" class="text-left" id="o_words"></td>
@@ -193,45 +226,17 @@
             return str.trim() + ' Only';
         }
 
-        // Rajasthan RGHS Slabs
-        function getRGHSSlab(basic) {
-            if (basic <= 18000) return 265;
-            if (basic <= 33500) return 440;
-            if (basic <= 54000) return 658;
-            return 875;
-        }
-
-        // Rajasthan GPF Slabs
-        function getGPFSlab(basic) {
-            if (basic <= 23100) return 1450;
-            if (basic <= 28500) return 1625;
-            if (basic <= 38500) return 2100;
-            if (basic <= 51500) return 2850;
-            if (basic <= 62000) return 3550;
-            if (basic <= 72000) return 4200;
-            if (basic <= 80000) return 4800;
-            if (basic <= 116000) return 6150;
-            return 7150;
-        }
-
         function generateSheet() {
             const startDateInput = document.getElementById('i_start_date').value;
             const endMonthInput = document.getElementById('i_end').value;
-            if (!startDateInput || !endMonthInput) {
-                alert("Please select both Start Date and End Month.");
-                return;
-            }
+            if (!startDateInput || !endMonthInput) { alert("Please select both Start Date and End Month."); return; }
 
             const startD = new Date(startDateInput);
             const endD = new Date(endMonthInput + "-01");
-            if(startD > endD) {
-                alert("End date must be after start date.");
-                return;
-            }
+            if(startD > endD) { alert("End date must be after start date."); return; }
 
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             
-            // Build the month array correctly
             let months = [];
             let current = new Date(startD.getFullYear(), startD.getMonth(), 1);
             while(current <= endD) {
@@ -244,7 +249,7 @@
                 current.setMonth(current.getMonth() + 1);
             }
 
-            // Fill Header details
+            // Fill Header Details
             document.getElementById('o_school').innerText = document.getElementById('i_school').value.toUpperCase();
             document.getElementById('o_name').innerText = document.getElementById('i_name').value.toUpperCase();
             document.getElementById('sig_name').innerText = document.getElementById('i_name').value.toUpperCase();
@@ -256,21 +261,25 @@
             const startStr = `${startD.getDate()} ${months[0].name}`;
             document.getElementById('o_period').innerText = `${startStr} to ${months[months.length-1].name}`;
 
+            // Initial Values
             const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
-
-            const base_due_basic = getVal('due_basic');
+            let current_due_basic = getVal('due_basic');
+            let current_dr_basic = getVal('drawn_basic');
+            
             const due_da_perc = getVal('due_da_perc');
             const due_hra_perc = getVal('due_hra_perc');
+            
+            const due_gpf_m = getVal('due_gpf_m');
+            const due_rghs_m = getVal('due_rghs_m');
             const due_si = getVal('due_si');
-            const due_gpf_slab = getGPFSlab(base_due_basic);
-            const due_rghs_slab = getRGHSSlab(base_due_basic);
 
-            const base_dr_basic = getVal('drawn_basic');
+            const payMode = document.querySelector('input[name="pay_mode"]:checked').value;
             const dr_da_perc = getVal('drawn_da_perc');
             const dr_hra_perc = getVal('drawn_hra_perc');
+            
+            const dr_gpf_m = getVal('drawn_gpf_m');
+            const dr_rghs_m = getVal('drawn_rghs_m');
             const dr_si = getVal('drawn_si');
-            const dr_gpf_slab = getGPFSlab(base_dr_basic);
-            const dr_rghs_slab = getRGHSSlab(base_dr_basic);
 
             let GT = {
                 due_p:0, due_da:0, due_h:0, due_t:0,
@@ -278,17 +287,26 @@
                 df_p:0, df_da:0, df_h:0, df_t:0,
                 gpf_d:0, gpf_ded:0, gpf_df:0,
                 si_d:0, si_ded:0, si_df:0,
-                rghs_d:0, rghs_ded:0, rghs_df:0
+                rghs_d:0, rghs_ded:0, rghs_df:0,
+                row_ded_total:0
             };
 
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = ''; 
 
             months.forEach((m, index) => {
+                // Apply 3% July Increment (rounded to nearest 100). Skip if it's the very first month listed.
+                if (index > 0 && m.month === 6) {
+                    current_due_basic = Math.round((current_due_basic * 1.03) / 100) * 100;
+                    if (payMode === 'regular') {
+                        current_dr_basic = Math.round((current_dr_basic * 1.03) / 100) * 100;
+                    }
+                }
+
                 let fraction = 1;
                 let dayLabel = "";
 
-                // Prorate the first month if start date is > 1st
+                // Proration logic
                 if (m.isFirst && startD.getDate() > 1) {
                     let daysInMonth = new Date(m.year, m.month + 1, 0).getDate();
                     let daysWorked = daysInMonth - startD.getDate() + 1;
@@ -297,36 +315,46 @@
                 }
 
                 // Month Due
-                let m_due_p = Math.round(base_due_basic * fraction);
+                let m_due_p = Math.round(current_due_basic * fraction);
                 let m_due_da = Math.round(m_due_p * (due_da_perc / 100));
                 let m_due_h = Math.round(m_due_p * (due_hra_perc / 100));
                 let m_due_t = m_due_p + m_due_da + m_due_h;
 
                 // Month Drawn
-                let m_dr_p = Math.round(base_dr_basic * fraction);
-                let m_dr_da = Math.round(m_dr_p * (dr_da_perc / 100));
-                let m_dr_h = Math.round(m_dr_p * (dr_hra_perc / 100));
+                let m_dr_p = Math.round(current_dr_basic * fraction);
+                let m_dr_da = 0;
+                let m_dr_h = 0;
+                
+                // If Regular pay, include DA and HRA. If Fix Pay, they remain 0.
+                if (payMode === 'regular') {
+                    m_dr_da = Math.round(m_dr_p * (dr_da_perc / 100));
+                    m_dr_h = Math.round(m_dr_p * (dr_hra_perc / 100));
+                }
                 let m_dr_t = m_dr_p + m_dr_da + m_dr_h;
 
-                // Diffs
+                // Differences
                 let m_df_p = m_due_p - m_dr_p;
                 let m_df_da = m_due_da - m_dr_da;
                 let m_df_h = m_due_h - m_dr_h;
                 let m_df_t = m_due_t - m_dr_t;
 
-                // Deductions (Full slabs apply regardless of days worked)
-                let df_gpf = due_gpf_slab - dr_gpf_slab;
+                // Manual deductions applied directly
+                let df_gpf = due_gpf_m - dr_gpf_m;
                 let df_si = due_si - dr_si;
-                let df_rghs = due_rghs_slab - dr_rghs_slab;
+                let df_rghs = due_rghs_m - dr_rghs_m;
 
-                // Accumulate GT
+                // Row Totals
+                let row_total_ded = df_gpf + df_si + df_rghs;
+                let row_net_pay = m_df_t - row_total_ded;
+
+                // Accumulate Grand Totals
                 GT.due_p += m_due_p; GT.due_da += m_due_da; GT.due_h += m_due_h; GT.due_t += m_due_t;
                 GT.dr_p += m_dr_p; GT.dr_da += m_dr_da; GT.dr_h += m_dr_h; GT.dr_t += m_dr_t;
                 GT.df_p += m_df_p; GT.df_da += m_df_da; GT.df_h += m_df_h; GT.df_t += m_df_t;
-                
-                GT.gpf_d += due_gpf_slab; GT.gpf_ded += dr_gpf_slab; GT.gpf_df += df_gpf;
+                GT.gpf_d += due_gpf_m; GT.gpf_ded += dr_gpf_m; GT.gpf_df += df_gpf;
                 GT.si_d += due_si; GT.si_ded += dr_si; GT.si_df += df_si;
-                GT.rghs_d += due_rghs_slab; GT.rghs_ded += dr_rghs_slab; GT.rghs_df += df_rghs;
+                GT.rghs_d += due_rghs_m; GT.rghs_ded += dr_rghs_m; GT.rghs_df += df_rghs;
+                GT.row_ded_total += row_total_ded;
 
                 let row = `<tr>
                     <td>${index + 1}</td>
@@ -335,22 +363,24 @@
                     <td>${m_dr_p}</td><td>${m_dr_da}</td><td>${m_dr_h}</td><td class="blue-text">${m_dr_t}</td>
                     <td>${m_df_p}</td><td>${m_df_da}</td><td>${m_df_h}</td><td class="blue-text">${m_df_t}</td>
                     
-                    <td>${due_gpf_slab}</td><td>${dr_gpf_slab}</td><td class="blue-text">${df_gpf}</td>
+                    <td>${due_gpf_m}</td><td>${dr_gpf_m}</td><td class="blue-text">${df_gpf}</td>
                     <td>${due_si}</td><td>${dr_si}</td><td class="blue-text">${df_si}</td>
                     <td>0</td><td>0</td><td class="blue-text">0</td>
-                    <td>${due_rghs_slab}</td><td>${dr_rghs_slab}</td><td class="blue-text">${df_rghs}</td>
+                    <td>${due_rghs_m}</td><td>${dr_rghs_m}</td><td class="blue-text">${df_rghs}</td>
                     
-                    <td></td><td></td><td></td><td></td><td></td><td></td>
+                    <td></td><td></td>
+                    <td class="red-text">${row_total_ded}</td>
+                    <td class="green-text">${row_net_pay}</td>
+                    <td></td><td></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
 
-        
-        // Final Deds
+            // Final Deds (Includes Row Deds + Lump Sums)
             const arr_gpf = getVal('t_gpf');
             const arr_it = getVal('t_it');
-            const total_deductions = GT.gpf_df + GT.si_df + 0 + GT.rghs_df + arr_gpf + arr_it;
-            const net_pay = GT.df_t - total_deductions;
+            const total_deductions_grand = GT.row_ded_total + arr_gpf + arr_it;
+            const net_pay_grand = GT.df_t - total_deductions_grand;
 
             const gtRow = document.getElementById('grandTotalRow');
             gtRow.innerHTML = `
@@ -364,11 +394,11 @@
                 <td class="blue-text">0</td><td class="blue-text">0</td><td class="blue-text">0</td>
                 <td class="blue-text">${GT.rghs_d}</td><td class="blue-text">${GT.rghs_ded}</td><td class="blue-text">${GT.rghs_df}</td>
                 
-                <td class="blue-text">${arr_gpf}</td><td class="blue-text">${arr_it}</td><td class="red-text">${total_deductions}</td><td class="green-text">${net_pay}</td>
+                <td class="blue-text">${arr_gpf}</td><td class="blue-text">${arr_it}</td><td class="red-text">${total_deductions_grand}</td><td class="green-text">${net_pay_grand}</td>
                 <td></td><td></td>
             `;
 
-            document.getElementById('o_words').innerText = 'Rupees ' + numberToWords(net_pay);
+            document.getElementById('o_words').innerText = 'Rupees ' + numberToWords(net_pay_grand);
 
             document.getElementById('inputForm').style.display = 'none';
             document.getElementById('actionButtons').style.display = 'block';
