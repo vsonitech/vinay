@@ -1,5 +1,4 @@
 ---
-layout: default
 title: Blog
 ---
 
@@ -13,17 +12,11 @@ body {
   background:#f4f6f9;
   margin:0;
 }
-.container {
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
 .blog-grid{
   max-width:1000px;
   margin:auto;
   padding:40px 20px;
 }
-
 .post-card{
   background:white;
   padding:25px;
@@ -74,8 +67,6 @@ body {
     <p>{{ post.excerpt | strip_html | truncate: 120 }}</p>
     <a class="readmore" href="{{ post.url }}">Read Article →</a>
   </div>
-{% endfor %}
-</div>
 {% endfor %}
 </div>
 
