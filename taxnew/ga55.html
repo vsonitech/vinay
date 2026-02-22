@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GA55A Salary Generator</title>
+
+<style>
+body{font-family:Calibri,Arial;margin:0;background:#f2f4f8}
+.sheet{width:1350px;margin:auto;background:#fff;padding:15px;box-shadow:0 0 10px rgba(0,0,0,.1)}
+h2{text-align:center;margin:5px 0 10px}
+.master{background:#eef2f7;padding:10px;margin-bottom:10px}
+.master input,select{padding:4px;margin:3px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th,td{border:1px solid #000;padding:3px;text-align:center}
+th{background:#d9c6b5}
+.vertical{writing-mode:vertical-rl;transform:rotate(180deg)}
+input.cell{width:60px;border:none;text-align:right}
+.total{font-weight:bold;background:#eee}
+.controls{text-align:center;margin-top:10px}
+@media print{
+.master,.controls{display:none}
+.sheet{box-shadow:none}
+body{background:white}
+}
+</style>
+</head>
+
+<body>
+<div class="sheet">
+
+<h2>GA55A - Salary & Deduction Statement FY 2025-26</h2>
+
+<div class="master">
+Basic (March):
+<input type="number" id="basic" value="40000">
+HRA %:
+<input type="number" id="hraPercent" value="10">
+Level:
+<input type="number" id="level" value="10">
+Increment Month:
+<select id="incMonth">
+<option value="July">July</option>
+<option value="January">January</option>
+</select>
+<button onclick="generate()">Generate</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Month</th>
+<th class="vertical">Basic</th>
+<th class="vertical">DA</th>
+<th class="vertical">HRA</th>
+<th class="vertical">Spl</th>
+<th class="vertical">CCA</th>
+<th class="vertical">Wash</th>
+<th class="vertical">ROP</th>
+<th class="vertical">Bonus</th>
+<th class="vertical">Other</th>
+<th class="vertical">Gross</th>
+<th class="vertical">GPF</th>
+<th class="vertical">SI</th>
+<th class="vertical">SI Loan</th>
+<th class="vertical">RGHS</th>
+<th class="vertical">LIC</th>
+<th class="vertical">GI</th>
+<th class="vertical">Tax</th>
+<th class="vertical">Hitkari</th>
+<th class="vertical">Coop</th>
+<th class="vertical">Other Ded</th>
+<th class="vertical">Total Ded</th>
+<th class="vertical">Net</th>
+<th>Bill / TV No</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+<tfoot>
+<tr class="total" id="totals">
+<td>Total</td>
+</tr>
+</tfoot>
+</table>
+
+<div class="controls">
+<button onclick="calculate()">Recalculate</button>
+<button onclick="window.print()">Print</button>
+</div>
+
+</div>
+
+<script>
+
+const months=["March","April","May","June","July","August","September","October","November","December","January","February"];
+const extraRows=[
+"DA Arrear 7/25-9/25",
+"DA Arrear 1/26-3/26",
+"Surrender 2025-26",
+"Bonus 2024-25",
+"Surrender Arrear",
+"Salary Arrear",
+"Other 1",
+"Other 2"
+];
+
+function mround100(val){
+return Math.round(val/100)*100;
+}
+
+function gpfSlab(b){
+if(b<23101)return 1450;
+if(b<28501)return 1625;
+if(b<38501)return 2100;
+if(b<51501)return 2850;
+if(b<62001)return 3575;
+if(b<72001)return 4200;
+if(b<80001)return 4800;
+if(b<116001)return 6150;
+if(b<167001)return 8900;
+return 10500;
+}
+
+function rghsSlab(b){
+if(b<18001)return 265;
+if(b<33501)return 440;
+if(b<54001)return 658;
+return 875;
+}
+
+function generate(){
+
+let basic=parseFloat(document.getElementById("basic").value);
+let hraPercent=parseFloat(document.getElementById("hraPercent").value);
+let level=parseFloat(document.getElementById("level").value);
+let incMonth=document.getElementById("incMonth").value;
+
+let tbody=document.getElementById("tbody");
+tbody.innerHTML="";
+
+let currentBasic=basic;
+
+months.forEach((m,i)=>{
+
+if((incMonth==="July" && m==="July") ||
+(incMonth==="January" && m==="January")){
+currentBasic=mround100(Math.round(1.03*currentBasic));
+}
+
+let daPercent=53;
+if(i>=4) daPercent=55;
+if(i>=10) daPercent=57;
+
+let da=Math.round(currentBasic*daPercent/100);
+let hra=Math.round(currentBasic*hraPercent/100);
+
+let gpf=gpfSlab(currentBasic);
+let rghs=rghsSlab(currentBasic);
+
+tbody.innerHTML+=rowHTML(m,currentBasic,da,hra,gpf,rghs);
+});
+
+/* DA ARREAR */
+let julyBasic = mround100(Math.round(1.03*basic));
+let arrearJuly = Math.round(julyBasic*0.02)*3;
+
+let janBasic = (incMonth==="January")? mround100(Math.round(1.03*basic)) : julyBasic;
+let arrearJan = Math.round(janBasic*0.02)*3;
+
+extraRows.forEach(r=>{
+let val=0;
+if(r.includes("7/25")) val=arrearJuly;
+if(r.includes("1/26")) val=arrearJan;
+if(r.includes("Bonus") && level<=12) val=6000;
+
+tbody.innerHTML+=rowHTML(r,0,0,0,0,0,val);
+});
+
+calculate();
+}
+
+function rowHTML(label,basic,da,hra,gpf,rghs,bonus=0){
+return `
+<tr>
+<td>${label}</td>
+<td class="basic">${basic}</td>
+<td class="da">${da}</td>
+<td class="hra">${hra}</td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell bonus" value="${bonus}"></td>
+<td><input class="cell" value="0"></td>
+<td class="gross"></td>
+<td class="gpf">${gpf}</td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td class="rghs">${rghs}</td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td><input class="cell" value="0"></td>
+<td class="td"></td>
+<td class="net"></td>
+<td><input class="cell"></td>
+</tr>`;
+}
+
+function num(v){return parseFloat(v)||0;}
+
+function calculate(){
+
+let totals=Array(23).fill(0);
+
+document.querySelectorAll("#tbody tr").forEach(row=>{
+
+let tds=row.querySelectorAll("td");
+let basic=num(tds[1].innerText);
+let da=num(tds[2].innerText);
+let hra=num(tds[3].innerText);
+
+let inputs=row.querySelectorAll("input.cell");
+let spl=num(inputs[0].value);
+let cca=num(inputs[1].value);
+let wash=num(inputs[2].value);
+let rop=num(inputs[3].value);
+let bonus=num(inputs[4].value);
+let other=num(inputs[5].value);
+
+let gross=basic+da+hra+spl+cca+wash+rop+bonus+other;
+tds[10].innerText=gross;
+
+let gpf=num(tds[11].innerText);
+let si=num(inputs[6].value);
+let sil=num(inputs[7].value);
+let rghs=num(tds[14].innerText);
+let lic=num(inputs[8].value);
+let gi=num(inputs[9].value);
+let tax=num(inputs[10].value);
+let hit=num(inputs[11].value);
+let coop=num(inputs[12].value);
+let od=num(inputs[13].value);
+
+let totalDed=gpf+si+sil+rghs+lic+gi+tax+hit+coop+od;
+tds[21].innerText=totalDed;
+
+let net=gross-totalDed;
+tds[22].innerText=net;
+
+let arr=[basic,da,hra,spl,cca,wash,rop,bonus,other,gross,gpf,si,sil,rghs,lic,gi,tax,hit,coop,od,totalDed,net];
+arr.forEach((v,i)=>totals[i]+=v);
+
+});
+
+let tr=document.getElementById("totals");
+tr.innerHTML="<td>Total</td>";
+totals.forEach(v=>tr.innerHTML+=`<td>${v}</td>`);
+tr.innerHTML+="<td></td>";
+
+}
+
+generate();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+/* Color Variables for easy theme management */
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary-color: #475569;
+  --bg-color: #f8fafc;
+  --surface-color: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+}
+
+body {
+  font-family: 'Inter', Calibri, Arial, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-main);
+  margin: 0;
+  padding: 20px 0;
+  line-height: 1.5;
+}
+
+/* Main Container styling */
+.sheet {
+  max-width: 850px;
+  width: 92%;
+  margin: auto;
+  background: var(--surface-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+h1, h2, h3 { margin: 0; }
+.center { text-align: center; }
+.right { text-align: right; }
+.bold { font-weight: 600; }
+.text-muted { color: var(--text-muted); }
+
+/* Header Elements */
+.tool-header {
+  background: linear-gradient(to right, #eff6ff, #e0e7ff);
+  border-bottom: 4px solid var(--primary-color);
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.tool-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e3a8a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 12px;
+  background: var(--primary-color);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.tool-instruction {
+  font-size: 14px;
+  margin-top: 15px;
+  padding: 12px 16px;
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
+  border-radius: 6px;
+  display: inline-block;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Forms */
+.form-section {
+  padding: 30px 40px;
+}
+
+.form-section h3 {
+  color: var(--text-main);
+  margin-bottom: 20px;
+  font-size: 18px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--secondary-color);
+}
+
+.input-group input,
+.input-group select {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: #f8fafc;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  background: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Buttons */
+.button-row {
+  text-align: center;
+  margin-top: 30px;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+}
+
+.action-buttons button {
+  margin: 0 10px;
+}
+
+.btn-secondary { background: #475569; color: white; }
+.btn-secondary:hover { background: #334155; }
+.btn-success { background: #10b981; color: white; }
+.btn-success:hover { background: #059669; }
+
+/* Credits */
+.top-credit, .credit-line {
+  background: var(--text-main);
+  color: #f1f5f9;
+  text-align: center;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Output Section */
+#outputSection {
+  display: none;
+  max-width: 850px;
+  width: 92%;
+  margin: 30px auto;
+  padding: 40px;
+  background: var(--surface-color);
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+  box-sizing: border-box;
+}
+
+/* Animation for the results table */
+.slide-up-anim {
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Table Design */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 600px; /* Prevents squishing on mobile */
+}
+
+td {
+  border: 1px solid var(--border-color);
+  padding: 10px 12px;
+}
+
+.title-row {
+  font-size: 16px;
+  color: var(--primary-color);
+  background: #f0fdf4;
+}
+
+.bg-light { background: #f8fafc; }
+.section-title { background: #e2e8f0; font-weight: 700; color: #334155; }
+.total-row { background: #f1f5f9; font-weight: 600; }
+.highlight-row { background: #eff6ff; }
+.highlight { color: var(--primary-color); font-weight: 700; }
+.final-status { font-size: 15px; }
+
+/* Signature */
+.signature-box {
+  height: 100px;
+  vertical-align: bottom;
+  text-align: center;
+  font-weight: 600;
+  color: var(--secondary-color);
+  padding-bottom: 15px;
+}
+
+/* Disclaimer */
+.disclaimer {
+  font-size: 12px;
+  padding: 12px;
+  background: #fffbeb;
+  color: #b45309;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Responsive - Fits table strictly inside mobile screens */
+@media(max-width: 768px) {
+    .sheet {
+        width: 95%;
+        padding: 15px;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    #outputSection {
+        padding: 10px;
+        margin: 10px auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    table {
+        min-width: 100% !important; 
+        table-layout: fixed; /* Forces table to stay within bounds */
+        font-size: 11px; /* Shrinks font to fit data */
+        word-wrap: break-word;
+    }
+    td {
+        padding: 4px 2px;
+    }
+}
+
+/* Print Settings - Shrinks output to fit exactly on ONE page */
+/* PRINT SETTINGS */
+@media print {
+    @page { 
+        margin: 10mm; 
+    }
+    /* Removed .credit-line from this hidden list */
+    .form-section, .button-row, .tool-instruction, .top-credit {
+        display: none !important;
+    }
+    body { 
+        background: #fff !important; 
+        margin: 0; 
+        padding: 0; 
+    }
+    #outputSection {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+    table {
+        font-size: 13px !important; 
+    }
+    td {
+        padding: 5px !important; 
+    }
+    .signature-box {
+        height: 50px !important; 
+    }
+    /* Force the credit line to show up with its colors */
+    .credit-line {
+        display: table-cell !important;
+        background: #1e3a8a !important; 
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
